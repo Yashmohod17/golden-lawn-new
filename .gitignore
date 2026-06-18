@@ -1,0 +1,36 @@
+# Node dependencies
+node_modules/
+**/node_modules/
+
+# Next.js build outputs
+client/.next/
+client/out/
+.next/
+
+# Backend build outputs
+server/dist/
+
+# Local databases
+server/prisma/dev.db
+server/prisma/dev.db-journal
+
+# Environment variables
+.env
+.env.local
+client/.env.local
+server/.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# TypeScript
+*.tsbuildinfo
+client/next-env.d.ts

@@ -1,0 +1,289 @@
+import prisma from '../config/database';
+import { BookingInput } from '../validations/booking.validation';
+
+export class BookingRepository {
+  async getAll() {
+    return prisma.booking.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
+  async checkDuplicate(date: string, location: string, excludeId?: string) {
+    const conflict = await prisma.booking.findFirst({
+      where: {
+        date,
+        location,
+        status: { notIn: ['CANCELLED', 'EXPIRED'] },
+        id: excludeId ? { not: excludeId } : undefined,
+      },
+    });
+    if (conflict) {
+      throw new Error(`Lawn is already booked for this date: ${date} at location: ${location}.`);
+    }
+  }
+
+  async create(data: BookingInput) {
+    const defaultLocation = 'Grand Main Lawn A & B';
+    // Check duplicate
+    await this.checkDuplicate(data.date, defaultLocation);
+
+    // Attempt to link booking to existing customer profile by email
+    const customer = await prisma.customer.findUnique({
+      where: { email: data.email },
+    });
+
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    return prisma.$transaction(async (tx) => {
+      const now = new Date();
+      const expiresAt = new Date(now.getTime() + 15 * 60 * 1000); // 15-minute checkout hold logic
+
+      const booking = await tx.booking.create({
+        data: {
+          customerId: customer ? customer.id : null,
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          eventType: data.eventType,
+          date: data.date,
+          guests: data.guests,
+          package: data.package,
+          cost: data.cost,
+          paid: 0,
+          pending: data.cost,
+          notes: data.notes,
+          status: 'TEMP_RESERVED',
+          location: defaultLocation,
+          coordinatorName: 'Aravind Sharma',
+          coordinatorPhone: '+91 98877 66554',
+          reservedAt: now,
+          expiresAt: expiresAt,
+        },
+      });
+
+      // Create default coordination milestones for the timeline
+      await tx.milestone.createMany({
+        data: [
+          { bookingId: booking.id, label: 'Inquiry Submitted', date: todayStr, status: 'COMPLETED' },
+          { bookingId: booking.id, label: 'Site Visit & Consultation', status: 'PENDING' },
+          { bookingId: booking.id, label: 'Booking Deposit Paid', status: 'PENDING' },
+          { bookingId: booking.id, label: 'Design & Menu Finalization', status: 'PENDING' },
+          { bookingId: booking.id, label: 'Balance Settlement', status: 'PENDING' },
+          { bookingId: booking.id, label: 'Event Execution Day', status: 'PENDING' },
+        ],
+      });
+
+      // Log initial status history
+      await tx.bookingStatusHistory.create({
+        data: {
+          bookingId: booking.id,
+          oldStatus: null,
+          newStatus: 'TEMP_RESERVED',
+          changedBy: 'CUSTOMER',
+          notes: 'Temporary reservation block created. Waiting for reservation payment.',
+        },
+      });
+
+      // Log initial timeline event
+      await tx.bookingTimelineEvent.create({
+        data: {
+          bookingId: booking.id,
+          title: 'Reservation Initiated',
+          description: `48-hour temporary reservation block created for ${data.eventType} on ${data.date}. Reserved until ${expiresAt.toLocaleString()}.`,
+          type: 'STATUS_CHANGE',
+          date: todayStr,
+        },
+      });
+
+      // Notify customer via BookingService after tx commits
+      return booking;
+    });
+  }
+
+  async update(id: string, data: Partial<BookingInput & { location: string; coordinatorName: string; coordinatorPhone: string; status: string; paid: number; pending: number; milestones?: any[] }>, changedBy = 'COORDINATOR') {
+    const existing = await prisma.booking.findUnique({
+      where: { id },
+    });
+
+    if (!existing) {
+      throw new Error(`Booking with ID ${id} not found.`);
+    }
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    if (existing.date < todayStr) {
+      throw new Error('Past bookings cannot be updated or cancelled.');
+    }
+
+    // Downgrade prevention checks
+    const costValCheck = data.cost !== undefined ? data.cost : existing.cost;
+    if (costValCheck < existing.cost) {
+      if (existing.paid >= existing.cost) {
+        throw new Error('Package downgrade is not allowed for fully settled bookings.');
+      } else if (existing.paid >= costValCheck) {
+        throw new Error(`Package downgrade is not allowed because the amount already paid (₹${existing.paid.toLocaleString()}) is greater than or equal to the new package cost (₹${costValCheck.toLocaleString()}).`);
+      }
+    }
+
+    const targetDate = data.date || existing.date;
+    const targetLocation = data.location || existing.location;
+
+    const dateChanged = data.date !== undefined && data.date !== existing.date;
+    const locationChanged = data.location !== undefined && data.location !== existing.location;
+
+    // Check duplicate if date or location actually changes
+    if (dateChanged || locationChanged) {
+      const targetStatus = data.status || existing.status;
+      if (!['CANCELLED', 'EXPIRED'].includes(targetStatus)) {
+        await this.checkDuplicate(targetDate, targetLocation, id);
+      }
+    }
+
+
+    return prisma.$transaction(async (tx) => {
+      const costVal = data.cost !== undefined ? data.cost : existing.cost;
+      const paidVal = data.paid !== undefined ? data.paid : existing.paid;
+      const pendingVal = Math.max(0, costVal - paidVal);
+
+      const { milestones, ...updateFields } = data;
+
+      // Handle clearing of expiresAt if status changes to non-temporary states
+      if (data.status === 'CONFIRMED' || data.status === 'VISIT_SCHEDULED' || data.status === 'CANCELLED' || data.status === 'EXPIRED') {
+        (updateFields as any).expiresAt = null;
+      }
+
+      const updated = await tx.booking.update({
+        where: { id },
+        data: {
+          ...updateFields,
+          pending: pendingVal,
+        },
+      });
+
+      if (milestones !== undefined) {
+        for (const m of milestones) {
+          await tx.milestone.updateMany({
+            where: {
+              bookingId: id,
+              label: m.label,
+            },
+            data: {
+              status: m.status,
+              date: m.date,
+            },
+          });
+        }
+      }
+
+      const timelineLogs: any[] = [];
+      const statusLogs: any[] = [];
+
+      // 1. If status changes
+      if (data.status !== undefined && data.status !== existing.status) {
+        statusLogs.push({
+          bookingId: id,
+          oldStatus: existing.status,
+          newStatus: data.status,
+          changedBy,
+          notes: `Status transitioned from ${existing.status} to ${data.status}.`,
+        });
+
+        timelineLogs.push({
+          bookingId: id,
+          title: `Status Updated: ${data.status}`,
+          description: `Booking status has been updated to ${data.status.toLowerCase()} by ${changedBy.toLowerCase()}.`,
+          type: 'STATUS_CHANGE',
+          date: todayStr,
+        });
+
+        // Side effects for status transitions
+        if (data.status === 'CONFIRMED') {
+          await tx.milestone.updateMany({
+            where: { bookingId: id, label: 'Booking Deposit Paid' },
+            data: { status: 'COMPLETED', date: todayStr }
+          });
+          await tx.availabilityDate.upsert({
+            where: { date: existing.date },
+            update: { status: 'BOOKED', notes: `Confirmed booking for ${existing.eventType}.` },
+            create: { date: existing.date, status: 'BOOKED', notes: `Confirmed booking for ${existing.eventType}.` }
+          });
+        } else if (data.status === 'VISIT_SCHEDULED') {
+          await tx.milestone.updateMany({
+            where: { bookingId: id, label: 'Site Visit & Consultation' },
+            data: { status: 'COMPLETED', date: todayStr }
+          });
+          await tx.availabilityDate.upsert({
+            where: { date: existing.date },
+            update: { status: 'PENDING', notes: `Site visit scheduled for ${existing.eventType}.` },
+            create: { date: existing.date, status: 'PENDING', notes: `Site visit scheduled for ${existing.eventType}.` }
+          });
+        } else if (data.status === 'CANCELLED' || data.status === 'EXPIRED') {
+          await tx.availabilityDate.deleteMany({
+            where: { date: existing.date }
+          });
+        }
+      }
+
+      // 2. If logistics changed (date, location, guests, package) but status did not change
+      const dateChanged = data.date !== undefined && data.date !== existing.date;
+      const guestsChanged = data.guests !== undefined && data.guests !== existing.guests;
+      const packageChanged = data.package !== undefined && data.package !== existing.package;
+      const locationChanged = data.location !== undefined && data.location !== existing.location;
+
+      if (dateChanged || guestsChanged || packageChanged || locationChanged) {
+        let desc = 'Configurations updated:';
+        if (dateChanged) desc += ` date to ${data.date};`;
+        if (locationChanged) desc += ` location to ${data.location};`;
+        if (guestsChanged) desc += ` guests to ${data.guests};`;
+        if (packageChanged) desc += ` package to ${data.package};`;
+
+        timelineLogs.push({
+          bookingId: id,
+          title: 'Booking Details Updated',
+          description: desc,
+          type: 'DETAILS_UPDATE',
+          date: todayStr,
+        });
+      }
+
+      // Save status history
+      if (statusLogs.length > 0) {
+        await tx.bookingStatusHistory.createMany({
+          data: statusLogs,
+        });
+      }
+
+      // Save timeline events
+      if (timelineLogs.length > 0) {
+        await tx.bookingTimelineEvent.createMany({
+          data: timelineLogs,
+        });
+      }
+
+      return updated;
+    });
+  }
+
+  async getStatusHistory(bookingId: string) {
+    return prisma.bookingStatusHistory.findMany({
+      where: { bookingId },
+      orderBy: { changedAt: 'desc' },
+    });
+  }
+
+  async getTimelineEvents(bookingId: string) {
+    return prisma.bookingTimelineEvent.findMany({
+      where: { bookingId },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async delete(id: string) {
+    return prisma.booking.delete({
+      where: { id },
+    });
+  }
+}
+
+export const bookingRepository = new BookingRepository();
