@@ -2,99 +2,28 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, X, ZoomIn, Search } from 'lucide-react';
-
-const categories = [
-  'All',
-  'Weddings',
-  'Receptions',
-  'Engagements',
-  'Birthdays',
-  'Corporate Events',
-  'Decorations',
-  'Night View',
-  'Stage Designs',
-];
-
-const galleryItems = [
-  {
-    id: 1,
-    category: 'Weddings',
-    title: 'Fairytale Flower Arch Ceremony',
-    image: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop',
-    aspect: 'aspect-[4/5]',
-  },
-  {
-    id: 2,
-    category: 'Night View',
-    title: 'Lawn Lighting Illuminations',
-    image: 'https://images.unsplash.com/photo-1469371670807-013ccf25f16a?q=80&w=600&auto=format&fit=crop',
-    aspect: 'aspect-video',
-  },
-  {
-    id: 3,
-    category: 'Decorations',
-    title: 'Golden Table Dinner Setup',
-    image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=600&auto=format&fit=crop',
-    aspect: 'aspect-square',
-  },
-  {
-    id: 4,
-    category: 'Receptions',
-    title: 'Canopy Glow Lounge Zone',
-    image: 'https://images.unsplash.com/photo-1505232458729-565772b74dd7?q=80&w=600&auto=format&fit=crop',
-    aspect: 'aspect-[3/4]',
-  },
-  {
-    id: 5,
-    category: 'Stage Designs',
-    title: 'Bespoke Floral Royal Stage',
-    image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=600&auto=format&fit=crop',
-    aspect: 'aspect-[4/3]',
-  },
-  {
-    id: 6,
-    category: 'Engagements',
-    title: 'Classy Ring Exchanging Stage',
-    image: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=600&auto=format&fit=crop',
-    aspect: 'aspect-[4/5]',
-  },
-  {
-    id: 7,
-    category: 'Birthdays',
-    title: 'Vibrant Theme Balloon Backdrop',
-    image: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=600&auto=format&fit=crop',
-    aspect: 'aspect-square',
-  },
-  {
-    id: 8,
-    category: 'Corporate Events',
-    title: 'Annual Awards Gala Dining Room',
-    image: 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=600&auto=format&fit=crop',
-    aspect: 'aspect-video',
-  },
-  {
-    id: 9,
-    category: 'Weddings',
-    title: 'Ivory Walkway Petals Alignment',
-    image: 'https://images.unsplash.com/photo-1519225495810-7512c696505a?q=80&w=600&auto=format&fit=crop',
-    aspect: 'aspect-square',
-  },
-];
+import { ChevronLeft, ChevronRight, X, ZoomIn } from 'lucide-react';
+import { cmsService } from '../../services/cms';
 
 export default function Gallery() {
-  const [items, setItems] = useState<any[]>(galleryItems);
+  const [items, setItems] = useState<any[]>([]);
   const [activeFilter, setActiveFilter] = useState('All');
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedGal = localStorage.getItem('gc_gallery');
-      if (savedGal) {
-        setItems(JSON.parse(savedGal));
-      }
-    }
+    cmsService.getGallery()
+      .then(data => {
+        setItems(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to fetch gallery:', err);
+        setLoading(false);
+      });
   }, []);
+
+  const categories = ['All', ...Array.from(new Set(items.map(item => item.category)))];
 
   const filteredItems = activeFilter === 'All'
     ? items

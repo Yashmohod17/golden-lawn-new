@@ -54,7 +54,8 @@ export async function updateBookingStatus(id: string, status: Booking['status'])
     body: JSON.stringify({ status }),
   });
   if (!response.ok) {
-    throw new Error('Failed to update booking status');
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to update booking status');
   }
   return getBookings();
 }
@@ -64,7 +65,8 @@ export async function deleteBooking(id: string): Promise<Booking[]> {
     method: 'DELETE',
   });
   if (!response.ok) {
-    throw new Error('Failed to delete booking');
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to delete booking');
   }
   return getBookings();
 }

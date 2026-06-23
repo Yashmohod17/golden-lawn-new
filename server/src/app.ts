@@ -7,6 +7,7 @@ import http from 'http';
 import url from 'url';
 import { WebSocketServer, WebSocket } from 'ws';
 import jwt from 'jsonwebtoken';
+import path from 'path';
 
 import bookingRoutes from './routes/booking.routes';
 import { bookingService } from './services/booking.service';
@@ -16,6 +17,7 @@ import adminRoutes from './routes/admin.routes';
 import paymentRoutes from './routes/payment.routes';
 import notificationRoutes from './routes/notification.routes';
 import analyticsRoutes from './routes/analytics.routes';
+import cmsRoutes from './routes/cms.routes';
 
 import { errorHandler } from './middleware/error.middleware';
 import { securityHeaders, rateLimiter } from './middleware/security.middleware';
@@ -25,7 +27,8 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' })); // support large base64 image payloads
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use(securityHeaders);
 app.use(rateLimiter);
 
@@ -37,6 +40,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api', paymentRoutes);
 app.use('/api', notificationRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/cms', cmsRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

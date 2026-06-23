@@ -3,42 +3,23 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-react';
-
-const testimonials = [
-  {
-    name: 'Rohit & Sneha Sharma',
-    event: 'Grand Wedding',
-    rating: 5,
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop',
-    text: 'Our wedding at The Golden Celebrations Lawn was nothing short of a fairytale. The lighting decoration at night made the entire lawn look like a starry sky. Our guests were mesmerized, and the catering support was absolutely flawless. Thank you for making our day so special!',
-  },
-  {
-    name: 'Karan Malhotra',
-    event: 'Corporate Annual Gala',
-    rating: 5,
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150&auto=format&fit=crop',
-    text: 'We hosted our company’s 10th-anniversary celebration here with over 800 guests. The professional event management team handled everything seamlessly. The space is vast, parking was extremely well managed, and the stage setup was incredibly grand. Highly recommended!',
-  },
-  {
-    name: 'Priyanka Sen',
-    event: 'Engagement Ceremony',
-    rating: 5,
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop',
-    text: 'The floral design and stage decorations for our engagement ceremony were breathtaking. The booking process was very smooth, and the team accommodated all our customization requests. It felt extremely premium and intimate at the same time.',
-  },
-];
+import { cmsService } from '../services/cms';
 
 export function Testimonials() {
-  const [items, setItems] = useState<any[]>(testimonials);
+  const [items, setItems] = useState<any[]>([]);
   const [current, setCurrent] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedTests = localStorage.getItem('gc_testimonials');
-      if (savedTests) {
-        setItems(JSON.parse(savedTests));
-      }
-    }
+    cmsService.getTestimonials()
+      .then(data => {
+        setItems(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to fetch testimonials:', err);
+        setLoading(false);
+      });
   }, []);
 
   useEffect(() => {

@@ -58,6 +58,13 @@ export function CalendarChecker() {
     setSelectedDay(null);
   };
 
+  const isDayInPast = (day: number) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+    return dayDate < today;
+  };
+
   const getDayInfo = (day: number) => {
     const dayStr = String(day).padStart(2, '0');
     const mStr = String(currentDate.getMonth() + 1).padStart(2, '0');
@@ -66,6 +73,7 @@ export function CalendarChecker() {
   };
 
   const isDayBooked = (day: number) => {
+    if (isDayInPast(day)) return true;
     return !!getDayInfo(day);
   };
 
@@ -140,8 +148,9 @@ export function CalendarChecker() {
           {[...Array(daysInMonth)].map((_, idx) => {
             const dayNum = idx + 1;
             const dayInfo = getDayInfo(dayNum);
-            const booked = !!dayInfo;
-            const isReserved = dayInfo?.type === 'reserved';
+            const inPast = isDayInPast(dayNum);
+            const booked = inPast || !!dayInfo;
+            const isReserved = !inPast && dayInfo?.type === 'reserved';
             const selected = selectedDay === dayNum;
 
             return (

@@ -17,6 +17,8 @@ model User {
   createdAt     DateTime       @default(now())
   auditLogs     AuditLog[]
   notifications Notification[]
+
+  @@index([roleId])
 }
 
 model Role {
@@ -64,6 +66,8 @@ model CustomerNote {
   note       String
   authorName String
   createdAt  DateTime @default(now())
+
+  @@index([customerId])
 }
 
 model CustomerDocument {
@@ -74,6 +78,8 @@ model CustomerDocument {
   url        String
   type       String   // e.g. "PDF", "IMAGE"
   createdAt  DateTime @default(now())
+
+  @@index([customerId])
 }
 
 model Booking {
@@ -104,6 +110,8 @@ model Booking {
   timelineEvents   BookingTimelineEvent[]
   invoices         Invoice[]
   reminders        PaymentReminder[]
+
+  @@index([customerId])
 }
 
 model Milestone {
@@ -113,6 +121,8 @@ model Milestone {
   label     String
   date      String?
   status    String   @default("PENDING") // COMPLETED, IN_PROGRESS, PENDING, CANCELLED
+
+  @@index([bookingId])
 }
 
 model Payment {
@@ -138,6 +148,9 @@ model Payment {
   
   refundRequests RefundRequest[]
   transactions   PaymentTransaction[]
+
+  @@index([bookingId])
+  @@index([customerId])
 }
 
 model Notification {
@@ -157,6 +170,9 @@ model Notification {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @default(now()) @updatedAt
   logs       NotificationLog[]
+
+  @@index([customerId])
+  @@index([userId])
 }
 
 model NotificationTemplate {
@@ -180,8 +196,9 @@ model NotificationLog {
   notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
   status         String
   sentAt         DateTime     @default(now())
-}
 
+  @@index([notificationId])
+}
 
 model BookingStatusHistory {
   id        String   @id @default(uuid())
@@ -192,6 +209,8 @@ model BookingStatusHistory {
   changedAt DateTime @default(now())
   changedBy String?  // CUSTOMER, COORDINATOR, ADMIN
   notes     String?
+
+  @@index([bookingId])
 }
 
 model BookingTimelineEvent {
@@ -203,6 +222,8 @@ model BookingTimelineEvent {
   type        String   // "STATUS_CHANGE", "DETAILS_UPDATE", "MILESTONE_UPDATE", "PAYMENT_RECEIVED"
   date        String   // YYYY-MM-DD
   createdAt   DateTime @default(now())
+
+  @@index([bookingId])
 }
 
 model Invoice {
@@ -221,6 +242,9 @@ model Invoice {
   status          String   // PAID, UNPAID, PARTIALLY_PAID, OVERDUE
   createdAt       DateTime @default(now())
   generatedAt     DateTime @default(now())
+
+  @@index([bookingId])
+  @@index([customerId])
 }
 
 model RefundRequest {
@@ -232,6 +256,8 @@ model RefundRequest {
   refundStatus String   @default("REQUESTED") // REQUESTED, APPROVED, REJECTED, COMPLETED
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  @@index([paymentId])
 }
 
 model PaymentTransaction {
@@ -244,6 +270,8 @@ model PaymentTransaction {
   amount            Int
   status            String   @default("CREATED") // CREATED, SUCCESS, FAILED
   createdAt         DateTime @default(now())
+
+  @@index([paymentId])
 }
 
 model PaymentReminder {
@@ -255,6 +283,8 @@ model PaymentReminder {
   dueDate   String
   status    String   @default("PENDING") // PENDING, SENT
   createdAt DateTime @default(now())
+
+  @@index([bookingId])
 }
 
 model AvailabilityDate {
@@ -281,6 +311,8 @@ model CalendarEvent {
   color       String?  // hex or Tailwind class
   bookingId   String?
   createdAt   DateTime @default(now())
+
+  @@index([bookingId])
 }
 
 model Lead {
@@ -303,9 +335,11 @@ model Inquiry {
   eventDate String
   guests    Int
   notes     String?
-  status     String     @default("OPEN") // OPEN, CONVERTED, CLOSED
+  status    String     @default("OPEN") // OPEN, CONVERTED, CLOSED
   followUps FollowUp[]
   createdAt DateTime   @default(now())
+
+  @@index([leadId])
 }
 
 model FollowUp {
@@ -318,6 +352,8 @@ model FollowUp {
   nextAction String?
   status     String   @default("SCHEDULED") // SCHEDULED, COMPLETED, MISSED
   createdAt  DateTime @default(now())
+
+  @@index([inquiryId])
 }
 
 model AuditLog {
@@ -328,6 +364,8 @@ model AuditLog {
   details   String?  // JSON details
   ipAddress String?
   createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model Package {
@@ -339,6 +377,8 @@ model Package {
   color     String?
   accent    String?
   features  String   // JSON string of features, e.g. '[{"name": "...", "included": true}]'
+  isActive  Boolean  @default(true)
+  order     Int      @default(0)
   createdAt DateTime @default(now())
 }
 
@@ -349,5 +389,51 @@ model Testimonial {
   rating    Int
   avatar    String?
   text      String
+  isActive  Boolean  @default(true)
+  order     Int      @default(0)
   createdAt DateTime @default(now())
+}
+
+model Service {
+  id        String   @id @default(uuid())
+  title     String   @unique
+  desc      String
+  image     String
+  iconName  String
+  isActive  Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FAQ {
+  id        String   @id @default(uuid())
+  question  String
+  answer    String
+  category  String
+  isActive  Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model GalleryItem {
+  id        String   @id @default(uuid())
+  category  String
+  title     String
+  image     String
+  aspect    String   @default("aspect-[4/3]")
+  isActive  Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WebsiteSetting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

@@ -237,6 +237,10 @@ export function InquiryModal() {
   };
 
   const isDayBooked = (day: number) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const dayDate = new Date(calDate.getFullYear(), calDate.getMonth(), day);
+    if (dayDate < today) return true;
     return !!getDayInfo(day);
   };
 
@@ -415,8 +419,14 @@ export function InquiryModal() {
               {[...Array(daysInMonth)].map((_, idx) => {
                 const dayNum = idx + 1;
                 const dayInfo = getDayInfo(dayNum);
-                const booked = !!dayInfo;
-                const isReserved = dayInfo?.type === 'reserved';
+                const inPast = (() => {
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  const dayDate = new Date(calDate.getFullYear(), calDate.getMonth(), dayNum);
+                  return dayDate < today;
+                })();
+                const booked = inPast || !!dayInfo;
+                const isReserved = !inPast && dayInfo?.type === 'reserved';
                 const selected = selectedCalDay === dayNum;
 
                 return (

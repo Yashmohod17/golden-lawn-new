@@ -12,6 +12,7 @@ import {
 
 const JWT_SECRET = process.env.JWT_SECRET || 'golden_celebrations_secret_key_123_abc_xyz';
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'golden_celebrations_refresh_secret_key_987_def_uvw';
+const JWT_ACCESS_EXPIRES_IN = process.env.JWT_ACCESS_EXPIRES_IN || '15m';
 
 export class AdminController {
 
@@ -52,7 +53,7 @@ export class AdminController {
       const accessToken = jwt.sign(
         { id: user.id, email: user.email, role: roleName },
         JWT_SECRET,
-        { expiresIn: '1h' }
+        { expiresIn: JWT_ACCESS_EXPIRES_IN as any }
       );
       const refreshToken = jwt.sign(
         { id: user.id, email: user.email, role: roleName },

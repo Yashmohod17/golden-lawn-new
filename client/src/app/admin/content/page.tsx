@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, Award, Star, MessageSquare, Plus, Trash2, Edit, 
-  Save, Check, X, Shield, PlusCircle, HelpCircle, FileText, CheckCircle2,
-  Image
+  Save, Check, X, HelpCircle, CheckCircle2, Image, ToggleLeft, ToggleRight, ArrowUp, ArrowDown
 } from 'lucide-react';
+import { cmsService } from '../../../services/cms';
 
 interface Feature {
   name: string;
@@ -20,8 +20,10 @@ interface Package {
   desc: string;
   price: number;
   features: Feature[];
-  color: string;
-  accent: string;
+  color?: string | null;
+  accent?: string | null;
+  isActive: boolean;
+  order: number;
 }
 
 interface Testimonial {
@@ -29,8 +31,10 @@ interface Testimonial {
   name: string;
   event: string;
   rating: number;
-  avatar: string;
+  avatar: string | null;
   text: string;
+  isActive: boolean;
+  order: number;
 }
 
 interface FAQItem {
@@ -38,207 +42,36 @@ interface FAQItem {
   question: string;
   answer: string;
   category: string;
+  isActive: boolean;
+  order: number;
 }
 
-const defaultGalleryItems = [
-  {
-    id: 'gal-1',
-    category: 'Weddings',
-    title: 'Fairytale Flower Arch Ceremony',
-    image: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop',
-    aspect: 'aspect-[4/5]',
-  },
-  {
-    id: 'gal-2',
-    category: 'Night View',
-    title: 'Lawn Lighting Illuminations',
-    image: 'https://images.unsplash.com/photo-1469371670807-013ccf25f16a?q=80&w=600&auto=format&fit=crop',
-    aspect: 'aspect-video',
-  },
-  {
-    id: 'gal-3',
-    category: 'Decorations',
-    title: 'Golden Table Dinner Setup',
-    image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=600&auto=format&fit=crop',
-    aspect: 'aspect-square',
-  },
-  {
-    id: 'gal-4',
-    category: 'Receptions',
-    title: 'Canopy Glow Lounge Zone',
-    image: 'https://images.unsplash.com/photo-1505232458729-565772b74dd7?q=80&w=600&auto=format&fit=crop',
-    aspect: 'aspect-[3/4]',
-  },
-  {
-    id: 'gal-5',
-    category: 'Stage Designs',
-    title: 'Bespoke Floral Royal Stage',
-    image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=600&auto=format&fit=crop',
-    aspect: 'aspect-[4/3]',
-  },
-  {
-    id: 'gal-6',
-    category: 'Engagements',
-    title: 'Classy Ring Exchanging Stage',
-    image: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=600&auto=format&fit=crop',
-    aspect: 'aspect-[4/5]',
-  },
-  {
-    id: 'gal-7',
-    category: 'Birthdays',
-    title: 'Vibrant Theme Balloon Backdrop',
-    image: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=600&auto=format&fit=crop',
-    aspect: 'aspect-square',
-  },
-  {
-    id: 'gal-8',
-    category: 'Corporate Events',
-    title: 'Annual Awards Gala Dining Room',
-    image: 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=600&auto=format&fit=crop',
-    aspect: 'aspect-video',
-  },
-  {
-    id: 'gal-9',
-    category: 'Weddings',
-    title: 'Ivory Walkway Petals Alignment',
-    image: 'https://images.unsplash.com/photo-1519225495810-7512c696505a?q=80&w=600&auto=format&fit=crop',
-    aspect: 'aspect-square',
-  },
-];
-
 export default function ContentManagementPage() {
-  const [activeTab, setActiveTab] = useState<'PACKAGES' | 'TESTIMONIALS' | 'FAQS' | 'GALLERY'>('PACKAGES');
+  const [activeTab, setActiveTab] = useState<'PACKAGES' | 'SERVICES' | 'TESTIMONIALS' | 'FAQS' | 'GALLERY'>('PACKAGES');
   const [successMsg, setSuccessMsg] = useState('');
 
-  // 1. Packages State
-  const [packagesList, setPackagesList] = useState<Package[]>([
-    {
-      id: 'pkg-1',
-      name: 'Silver Package',
-      badge: 'Standard Selection',
-      desc: 'Perfect for intimate celebrations, small gatherings, and simple family gatherings.',
-      price: 1200,
-      color: 'border-zinc-300 dark:border-zinc-700 bg-zinc-400/5',
-      accent: 'bg-zinc-400 text-zinc-950',
-      features: [
-        { name: 'Basic Flower & Light Decor', included: true },
-        { name: 'Full Lawn Access (8 hrs)', included: true },
-        { name: 'Standard Seating Setup', included: true },
-        { name: 'Standard Sound System', included: true },
-        { name: 'Catering Kitchen Access', included: true },
-        { name: 'Dedicated Stage Setup', included: false },
-        { name: 'Photography & Video', included: false },
-        { name: 'Complete Event Planning', included: false },
-        { name: 'VIP Guest Assistance & Valet', included: false },
-      ],
-    },
-    {
-      id: 'pkg-2',
-      name: 'Gold Package',
-      badge: 'Most Popular',
-      desc: 'Tailored for elegant evening receptions, engagements, and corporate banquets.',
-      price: 2500,
-      color: 'border-gold-400/40 bg-gold-400/5',
-      accent: 'bg-gold-400 text-zinc-950',
-      features: [
-        { name: 'Premium Flower & Light Decor', included: true },
-        { name: 'Full Lawn Access (12 hrs)', included: true },
-        { name: 'Designer Seating Setup', included: true },
-        { name: 'High-definition Sound System', included: true },
-        { name: 'In-house Catering Support', included: true },
-        { name: 'Custom Stage Decoration', included: true },
-        { name: 'Candid Photography Support', included: true },
-        { name: 'Complete Event Planning', included: false },
-        { name: 'VIP Guest Assistance & Valet', included: false },
-      ],
-    },
-    {
-      id: 'pkg-3',
-      name: 'Platinum Package',
-      badge: 'Luxury Unlimited',
-      desc: 'Our flagship wedding experience, handling every detail to majestic gold standards.',
-      price: 4500,
-      color: 'border-burgundy-500/35 bg-burgundy-600/5',
-      accent: 'bg-burgundy-600 text-white',
-      features: [
-        { name: 'Luxury Flower & Light Decor', included: true },
-        { name: 'Full Lawn Access (24 hrs)', included: true },
-        { name: 'Royal Seating Arrangements', included: true },
-        { name: 'Concert Sound System & DJ', included: true },
-        { name: 'Premium Multi-cuisine Catering', included: true },
-        { name: 'Bespoke Stage Artistry', included: true },
-        { name: 'Drone & Candid Photo/Video', included: true },
-        { name: 'Complete Event Management', included: true },
-        { name: 'VIP Valet & Guest Support Suite', included: true },
-      ],
-    },
-  ]);
-
-  // 2. Testimonials State
-  const [testimonialsList, setTestimonialsList] = useState<Testimonial[]>([
-    {
-      id: 'test-1',
-      name: 'Rohit & Sneha Sharma',
-      event: 'Grand Wedding',
-      rating: 5,
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop',
-      text: 'Our wedding at The Golden Celebrations Lawn was nothing short of a fairytale. The lighting decoration at night made the entire lawn look like a starry sky. Our guests were mesmerized, and the catering support was absolutely flawless. Thank you for making our day so special!',
-    },
-    {
-      id: 'test-2',
-      name: 'Karan Malhotra',
-      event: 'Corporate Annual Gala',
-      rating: 5,
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150&auto=format&fit=crop',
-      text: 'We hosted our company’s 10th-anniversary celebration here with over 800 guests. The professional event management team handled everything seamlessly. The space is vast, parking was extremely well managed, and the stage setup was incredibly grand. Highly recommended!',
-    },
-    {
-      id: 'test-3',
-      name: 'Priyanka Sen',
-      event: 'Engagement Ceremony',
-      rating: 5,
-      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop',
-      text: 'The floral design and stage decorations for our engagement ceremony were breathtaking. The booking process was very smooth, and the team accommodated all our customization requests. It felt extremely premium and intimate at the same time.',
-    },
-  ]);
-
-  // 3. FAQs State
-  const [faqsList, setFaqsList] = useState<FAQItem[]>([
-    {
-      id: 'faq-1',
-      category: 'Booking',
-      question: 'How do I book the venue for an event?',
-      answer: 'Booking is simple: Select an available date on our Calendar Checker or submit an Inquiry Form. A coordinator will lock the date temporarily and call you to arrange a site visit. A 25% advance payment is required to confirm the booking officially.',
-    },
-    {
-      id: 'faq-2',
-      category: 'Logistics',
-      question: 'What is the maximum guest capacity of the lawn?',
-      answer: 'The Golden Celebrations Lawn can accommodate up to 2,000 guests for open-air lawn events. For smaller, intimate celebrations, we can structure partition layouts to fit 150-300 guests comfortably.',
-    },
-    {
-      id: 'faq-3',
-      category: 'Logistics',
-      question: 'Is parking available on site?',
-      answer: 'Yes! We have an adjacent private parking area that fits over 300 vehicles securely. We also provide professional valet assistance for all major weddings and corporate functions at no extra cost.',
-    },
-    {
-      id: 'faq-4',
-      category: 'Catering',
-      question: 'Do you provide in-house catering, or can we bring our own chef?',
-      answer: 'We offer premium, multi-cuisine catering packages. However, you are welcome to hire external, government-approved catering teams. Access to our fully equipped base kitchen is provided.',
-    },
-  ]);
+  // CMS Lists States
+  const [packagesList, setPackagesList] = useState<Package[]>([]);
+  const [servicesList, setServicesList] = useState<any[]>([]);
+  const [testimonialsList, setTestimonialsList] = useState<Testimonial[]>([]);
+  const [faqsList, setFaqsList] = useState<FAQItem[]>([]);
+  const [galleryList, setGalleryList] = useState<any[]>([]);
 
   // Modals / Forms States
   const [editingPackage, setEditingPackage] = useState<Package | null>(null);
+  
+  const [editingService, setEditingService] = useState<any | null>(null);
+  const [isAddingService, setIsAddingService] = useState(false);
+  const [serviceFormTitle, setServiceFormTitle] = useState('');
+  const [serviceFormDesc, setServiceFormDesc] = useState('');
+  const [serviceFormImage, setServiceFormImage] = useState('');
+  const [serviceFormIconName, setServiceFormIconName] = useState('Sparkles');
+  const [serviceImgSource, setServiceImgSource] = useState<'url' | 'file'>('url');
+
   const [editingTestimonial, setEditingTestimonial] = useState<Testimonial | null>(null);
   const [isAddingTestimonial, setIsAddingTestimonial] = useState(false);
   const [editingFAQ, setEditingFAQ] = useState<FAQItem | null>(null);
   const [isAddingFAQ, setIsAddingFAQ] = useState(false);
-
-  // Gallery Management States
-  const [galleryList, setGalleryList] = useState<any[]>([]);
   const [editingGallery, setEditingGallery] = useState<any | null>(null);
   const [isAddingGallery, setIsAddingGallery] = useState(false);
 
@@ -283,52 +116,60 @@ export default function ContentManagementPage() {
     setTimeout(() => setSuccessMsg(''), 4000);
   };
 
-  // Synchronize localStorage on mount
-  React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedPkgs = localStorage.getItem('gc_packages');
-      if (savedPkgs) {
-        setPackagesList(JSON.parse(savedPkgs));
-      } else {
-        localStorage.setItem('gc_packages', JSON.stringify(packagesList));
-      }
-      
-      const savedTests = localStorage.getItem('gc_testimonials');
-      if (savedTests) {
-        setTestimonialsList(JSON.parse(savedTests));
-      } else {
-        localStorage.setItem('gc_testimonials', JSON.stringify(testimonialsList));
-      }
-      
-      const savedFaqs = localStorage.getItem('gc_faqs');
-      if (savedFaqs) {
-        setFaqsList(JSON.parse(savedFaqs));
-      } else {
-        localStorage.setItem('gc_faqs', JSON.stringify(faqsList));
-      }
-      
-      const savedGal = localStorage.getItem('gc_gallery');
-      if (savedGal) {
-        setGalleryList(JSON.parse(savedGal));
-      } else {
-        setGalleryList(defaultGalleryItems);
-        localStorage.setItem('gc_gallery', JSON.stringify(defaultGalleryItems));
-      }
-    }
+  // Fetch all CMS lists on mount
+  const loadCMSData = () => {
+    cmsService.getAdminPackages().then(setPackagesList).catch(console.error);
+    cmsService.getAdminServices().then(setServicesList).catch(console.error);
+    cmsService.getAdminTestimonials().then(setTestimonialsList).catch(console.error);
+    cmsService.getAdminFAQs().then(setFaqsList).catch(console.error);
+    cmsService.getAdminGallery().then(setGalleryList).catch(console.error);
+  };
+
+  useEffect(() => {
+    loadCMSData();
   }, []);
 
   // --- Packages Logic ---
-  const handleSavePackage = (e: React.FormEvent) => {
+  const handleSavePackage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingPackage) return;
-    
-    const updated = packagesList.map(p => p.id === editingPackage.id ? editingPackage : p);
-    setPackagesList(updated);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('gc_packages', JSON.stringify(updated));
+    try {
+      await cmsService.updatePackage(editingPackage.id, editingPackage);
+      setEditingPackage(null);
+      loadCMSData();
+      showAlert('Package parameters and features successfully updated.');
+    } catch (err: any) {
+      alert(err.message || 'Failed to save package.');
     }
-    setEditingPackage(null);
-    showAlert('Package parameters and features successfully updated.');
+  };
+
+  const handleTogglePackage = async (id: string, currentActive: boolean) => {
+    try {
+      await cmsService.togglePackageActive(id, !currentActive);
+      loadCMSData();
+      showAlert('Package active state successfully changed.');
+    } catch (err: any) {
+      alert(err.message || 'Failed to toggle active state.');
+    }
+  };
+
+  const handleReorderPackage = async (index: number, direction: 'up' | 'down') => {
+    const newList = [...packagesList];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= newList.length) return;
+    
+    // Swap
+    const temp = newList[index];
+    newList[index] = newList[targetIndex];
+    newList[targetIndex] = temp;
+
+    try {
+      await cmsService.reorderPackages(newList.map(p => p.id));
+      loadCMSData();
+      showAlert('Packages reordered.');
+    } catch (err: any) {
+      alert(err.message || 'Failed to reorder.');
+    }
   };
 
   const togglePackageFeature = (featureIdx: number) => {
@@ -336,6 +177,89 @@ export default function ContentManagementPage() {
     const updatedFeatures = [...editingPackage.features];
     updatedFeatures[featureIdx].included = !updatedFeatures[featureIdx].included;
     setEditingPackage({ ...editingPackage, features: updatedFeatures });
+  };
+
+  // --- Services Logic ---
+  const handleOpenAddService = () => {
+    setServiceFormTitle('');
+    setServiceFormDesc('');
+    setServiceFormImage('https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=400&auto=format&fit=crop');
+    setServiceFormIconName('Sparkles');
+    setServiceImgSource('url');
+    setIsAddingService(true);
+  };
+
+  const handleOpenEditService = (service: any) => {
+    setEditingService(service);
+    setServiceFormTitle(service.title);
+    setServiceFormDesc(service.desc);
+    setServiceFormImage(service.image);
+    setServiceFormIconName(service.iconName || 'Sparkles');
+    setServiceImgSource('url');
+  };
+
+  const handleSaveService = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        title: serviceFormTitle,
+        desc: serviceFormDesc,
+        image: serviceFormImage,
+        iconName: serviceFormIconName,
+      };
+
+      if (isAddingService) {
+        await cmsService.addService(payload as any);
+        setIsAddingService(false);
+        showAlert('New event service successfully created and published.');
+      } else if (editingService) {
+        await cmsService.updateService(editingService.id, payload as any);
+        setEditingService(null);
+        showAlert('Service specifications successfully updated.');
+      }
+      loadCMSData();
+    } catch (err: any) {
+      alert(err.message || 'Failed to save service.');
+    }
+  };
+
+  const handleDeleteService = async (id: string) => {
+    if (!window.confirm('Delete this service?')) return;
+    try {
+      await cmsService.deleteService(id);
+      loadCMSData();
+      showAlert('Service removed successfully.');
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete service.');
+    }
+  };
+
+  const handleToggleService = async (id: string, currentActive: boolean) => {
+    try {
+      await cmsService.toggleServiceActive(id, !currentActive);
+      loadCMSData();
+      showAlert('Service status toggled successfully.');
+    } catch (err: any) {
+      alert(err.message || 'Failed to toggle service.');
+    }
+  };
+
+  const handleReorderService = async (index: number, direction: 'up' | 'down') => {
+    const newList = [...servicesList];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= newList.length) return;
+    
+    const temp = newList[index];
+    newList[index] = newList[targetIndex];
+    newList[targetIndex] = temp;
+
+    try {
+      await cmsService.reorderServices(newList.map(s => s.id));
+      loadCMSData();
+      showAlert('Services reordered.');
+    } catch (err: any) {
+      alert(err.message || 'Failed to reorder.');
+    }
   };
 
   // --- Testimonials Logic ---
@@ -355,54 +279,73 @@ export default function ContentManagementPage() {
     setTestFormEvent(test.event);
     setTestFormRating(test.rating);
     setTestFormText(test.text);
-    setTestFormAvatar(test.avatar);
+    setTestFormAvatar(test.avatar || '');
     setTestimonialImgSource('url');
   };
 
-  const handleSaveTestimonial = (e: React.FormEvent) => {
+  const handleSaveTestimonial = async (e: React.FormEvent) => {
     e.preventDefault();
-    let updated: Testimonial[];
-    if (isAddingTestimonial) {
-      const newTest: Testimonial = {
-        id: `test-${Date.now()}`,
+    try {
+      const payload = {
         name: testFormName,
         event: testFormEvent,
         rating: testFormRating,
         text: testFormText,
         avatar: testFormAvatar,
       };
-      updated = [...testimonialsList, newTest];
-      setTestimonialsList(updated);
-      setIsAddingTestimonial(false);
-      showAlert('New testimonial successfully created and added to landing pool.');
-    } else if (editingTestimonial) {
-      updated = testimonialsList.map(t => t.id === editingTestimonial.id ? {
-        ...t,
-        name: testFormName,
-        event: testFormEvent,
-        rating: testFormRating,
-        text: testFormText,
-        avatar: testFormAvatar,
-      } : t);
-      setTestimonialsList(updated);
-      setEditingTestimonial(null);
-      showAlert('Testimonial details updated.');
-    } else {
-      return;
-    }
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('gc_testimonials', JSON.stringify(updated));
+
+      if (isAddingTestimonial) {
+        await cmsService.addTestimonial(payload as any);
+        setIsAddingTestimonial(false);
+        showAlert('New testimonial successfully created and added to landing pool.');
+      } else if (editingTestimonial) {
+        await cmsService.updateTestimonial(editingTestimonial.id, payload as any);
+        setEditingTestimonial(null);
+        showAlert('Testimonial details updated.');
+      }
+      loadCMSData();
+    } catch (err: any) {
+      alert(err.message || 'Failed to save testimonial.');
     }
   };
 
-  const handleDeleteTestimonial = (id: string) => {
+  const handleDeleteTestimonial = async (id: string) => {
     if (!window.confirm('Delete this testimonial?')) return;
-    const updated = testimonialsList.filter(t => t.id !== id);
-    setTestimonialsList(updated);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('gc_testimonials', JSON.stringify(updated));
+    try {
+      await cmsService.deleteTestimonial(id);
+      loadCMSData();
+      showAlert('Testimonial removed from active roster.');
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete testimonial.');
     }
-    showAlert('Testimonial removed from active roster.');
+  };
+
+  const handleToggleTestimonial = async (id: string, currentActive: boolean) => {
+    try {
+      await cmsService.toggleTestimonialActive(id, !currentActive);
+      loadCMSData();
+      showAlert('Testimonial active state changed.');
+    } catch (err: any) {
+      alert(err.message || 'Failed to toggle testimonial active state.');
+    }
+  };
+
+  const handleReorderTestimonial = async (index: number, direction: 'up' | 'down') => {
+    const newList = [...testimonialsList];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= newList.length) return;
+    
+    const temp = newList[index];
+    newList[index] = newList[targetIndex];
+    newList[targetIndex] = temp;
+
+    try {
+      await cmsService.reorderTestimonials(newList.map(t => t.id));
+      loadCMSData();
+      showAlert('Testimonials reordered.');
+    } catch (err: any) {
+      alert(err.message || 'Failed to reorder.');
+    }
   };
 
   // --- FAQs Logic ---
@@ -420,46 +363,67 @@ export default function ContentManagementPage() {
     setFaqFormCategory(faq.category);
   };
 
-  const handleSaveFAQ = (e: React.FormEvent) => {
+  const handleSaveFAQ = async (e: React.FormEvent) => {
     e.preventDefault();
-    let updated: FAQItem[];
-    if (isAddingFAQ) {
-      const newFaq: FAQItem = {
-        id: `faq-${Date.now()}`,
+    try {
+      const payload = {
         question: faqFormQuestion,
         answer: faqFormAnswer,
         category: faqFormCategory,
       };
-      updated = [...faqsList, newFaq];
-      setFaqsList(updated);
-      setIsAddingFAQ(false);
-      showAlert('New FAQ item published to support desk.');
-    } else if (editingFAQ) {
-      updated = faqsList.map(f => f.id === editingFAQ.id ? {
-        ...f,
-        question: faqFormQuestion,
-        answer: faqFormAnswer,
-        category: faqFormCategory,
-      } : f);
-      setFaqsList(updated);
-      setEditingFAQ(null);
-      showAlert('FAQ content successfully modified.');
-    } else {
-      return;
-    }
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('gc_faqs', JSON.stringify(updated));
+
+      if (isAddingFAQ) {
+        await cmsService.addFAQ(payload as any);
+        setIsAddingFAQ(false);
+        showAlert('New FAQ item published to support desk.');
+      } else if (editingFAQ) {
+        await cmsService.updateFAQ(editingFAQ.id, payload as any);
+        setEditingFAQ(null);
+        showAlert('FAQ content successfully modified.');
+      }
+      loadCMSData();
+    } catch (err: any) {
+      alert(err.message || 'Failed to save FAQ.');
     }
   };
 
-  const handleDeleteFAQ = (id: string) => {
+  const handleDeleteFAQ = async (id: string) => {
     if (!window.confirm('Remove this FAQ item?')) return;
-    const updated = faqsList.filter(f => f.id !== id);
-    setFaqsList(updated);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('gc_faqs', JSON.stringify(updated));
+    try {
+      await cmsService.deleteFAQ(id);
+      loadCMSData();
+      showAlert('FAQ item removed.');
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete FAQ.');
     }
-    showAlert('FAQ item removed.');
+  };
+
+  const handleToggleFAQ = async (id: string, currentActive: boolean) => {
+    try {
+      await cmsService.toggleFAQActive(id, !currentActive);
+      loadCMSData();
+      showAlert('FAQ status toggled successfully.');
+    } catch (err: any) {
+      alert(err.message || 'Failed to toggle FAQ.');
+    }
+  };
+
+  const handleReorderFAQ = async (index: number, direction: 'up' | 'down') => {
+    const newList = [...faqsList];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= newList.length) return;
+    
+    const temp = newList[index];
+    newList[index] = newList[targetIndex];
+    newList[targetIndex] = temp;
+
+    try {
+      await cmsService.reorderFAQs(newList.map(f => f.id));
+      loadCMSData();
+      showAlert('FAQs reordered.');
+    } catch (err: any) {
+      alert(err.message || 'Failed to reorder FAQs.');
+    }
   };
 
   // --- Gallery Logic ---
@@ -481,49 +445,71 @@ export default function ContentManagementPage() {
     setGalleryImgSource('url');
   };
 
-  const handleSaveGallery = (e: React.FormEvent) => {
+  const handleSaveGallery = async (e: React.FormEvent) => {
     e.preventDefault();
-    let updated: any[];
-    if (isAddingGallery) {
-      const newItem = {
-        id: `gal-${Date.now()}`,
+    try {
+      const payload = {
         title: galleryFormTitle,
         category: galleryFormCategory,
         image: galleryFormImage,
         aspect: galleryFormAspect,
       };
-      updated = [...galleryList, newItem];
-      setGalleryList(updated);
-      setIsAddingGallery(false);
-      showAlert('New gallery image successfully added.');
-    } else if (editingGallery) {
-      updated = galleryList.map(item => item.id === editingGallery.id ? {
-        ...item,
-        title: galleryFormTitle,
-        category: galleryFormCategory,
-        image: galleryFormImage,
-        aspect: galleryFormAspect,
-      } : item);
-      setGalleryList(updated);
-      setEditingGallery(null);
-      showAlert('Gallery image specifications updated.');
-    } else {
-      return;
-    }
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('gc_gallery', JSON.stringify(updated));
+
+      if (isAddingGallery) {
+        await cmsService.addGalleryItem(payload as any);
+        setIsAddingGallery(false);
+        showAlert('New gallery image successfully added.');
+      } else if (editingGallery) {
+        await cmsService.updateGalleryItem(editingGallery.id, payload as any);
+        setEditingGallery(null);
+        showAlert('Gallery image specifications updated.');
+      }
+      loadCMSData();
+    } catch (err: any) {
+      alert(err.message || 'Failed to save gallery item.');
     }
   };
 
-  const handleDeleteGallery = (id: string) => {
+  const handleDeleteGallery = async (id: string) => {
     if (!window.confirm('Delete this gallery image?')) return;
-    const updated = galleryList.filter(item => item.id !== id);
-    setGalleryList(updated);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('gc_gallery', JSON.stringify(updated));
+    try {
+      await cmsService.deleteGalleryItem(id);
+      loadCMSData();
+      showAlert('Gallery image removed.');
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete gallery item.');
     }
-    showAlert('Gallery image removed.');
   };
+
+  const handleToggleGalleryItem = async (id: string, currentActive: boolean) => {
+    try {
+      await cmsService.toggleGalleryItemActive(id, !currentActive);
+      loadCMSData();
+      showAlert('Gallery image status toggled.');
+    } catch (err: any) {
+      alert(err.message || 'Failed to toggle gallery image.');
+    }
+  };
+
+  const handleReorderGalleryItem = async (index: number, direction: 'up' | 'down') => {
+    const newList = [...galleryList];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= newList.length) return;
+    
+    const temp = newList[index];
+    newList[index] = newList[targetIndex];
+    newList[targetIndex] = temp;
+
+    try {
+      await cmsService.reorderGalleryItems(newList.map(g => g.id));
+      loadCMSData();
+      showAlert('Gallery items reordered.');
+    } catch (err: any) {
+      alert(err.message || 'Failed to reorder.');
+    }
+  };
+
+
 
   return (
     <div className="space-y-6 relative min-h-[80vh]">
@@ -541,6 +527,14 @@ export default function ContentManagementPage() {
 
         {/* Action button based on tab */}
         <div>
+          {activeTab === 'SERVICES' && (
+            <button
+              onClick={handleOpenAddService}
+              className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-gold-600 to-gold-400 px-4.5 py-2.5 text-xs font-bold text-zinc-950 uppercase shadow-md hover:opacity-95 cursor-pointer"
+            >
+              <Plus className="h-4 w-4" /> Add Service
+            </button>
+          )}
           {activeTab === 'TESTIMONIALS' && (
             <button
               onClick={handleOpenAddTestimonial}
@@ -579,6 +573,7 @@ export default function ContentManagementPage() {
       <div className="flex gap-2 border-b border-gold-400/10 pb-2 overflow-x-auto no-scrollbar">
         {[
           { id: 'PACKAGES', label: 'Banqueting Packages', icon: Award },
+          { id: 'SERVICES', label: 'Event Services', icon: Sparkles },
           { id: 'TESTIMONIALS', label: 'Client Reviews', icon: MessageSquare },
           { id: 'FAQS', label: 'Support FAQs', icon: HelpCircle },
           { id: 'GALLERY', label: 'Gallery Management', icon: Image },
@@ -604,12 +599,41 @@ export default function ContentManagementPage() {
         {/* --- 1. PACKAGES PANEL --- */}
         {activeTab === 'PACKAGES' && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {packagesList.map((pkg) => {
+            {packagesList.map((pkg, idx) => {
               const featuresList = JSON.parse(JSON.stringify(pkg.features)) as Feature[];
               const includedCount = featuresList.filter(f => f.included).length;
 
               return (
                 <div key={pkg.id} className="border border-gold-400/10 hover:border-gold-400/30 bg-gold-400/5/10 rounded-3xl p-6 flex flex-col justify-between hover:shadow-md transition-all space-y-6">
+                  <div className="flex justify-between items-center border-b border-gold-400/10 pb-2 mb-2">
+                    <button
+                      onClick={() => handleTogglePackage(pkg.id, pkg.isActive)}
+                      className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-foreground/70"
+                    >
+                      {pkg.isActive ? (
+                        <ToggleRight className="h-4.5 w-4.5 text-gold-500" />
+                      ) : (
+                        <ToggleLeft className="h-4.5 w-4.5 text-foreground/30" />
+                      )}
+                      <span>{pkg.isActive ? 'Active' : 'Inactive'}</span>
+                    </button>
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => handleReorderPackage(idx, 'up')}
+                        disabled={idx === 0}
+                        className="p-1 rounded hover:bg-gold-400/10 text-foreground/50 disabled:opacity-30 cursor-pointer"
+                      >
+                        <ArrowUp className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleReorderPackage(idx, 'down')}
+                        disabled={idx === packagesList.length - 1}
+                        className="p-1 rounded hover:bg-gold-400/10 text-foreground/50 disabled:opacity-30 cursor-pointer"
+                      >
+                        <ArrowDown className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
                   <div className="space-y-4">
                     <div className="flex justify-between items-start">
                       <div>
@@ -654,7 +678,98 @@ export default function ContentManagementPage() {
           </div>
         )}
 
-        {/* --- 2. TESTIMONIALS PANEL --- */}
+        {/* --- 2. SERVICES PANEL --- */}
+        {activeTab === 'SERVICES' && (
+          <div className="space-y-4">
+            <div className="overflow-x-auto border border-gold-400/10 rounded-xl">
+              <table className="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr className="bg-gold-400/5 font-serif text-[11px] font-bold text-foreground border-b border-gold-400/15">
+                    <th className="p-4 w-16">Image</th>
+                    <th className="p-4 w-48">Service Title</th>
+                    <th className="p-4 w-32">Icon Name</th>
+                    <th className="p-4 w-20">Status</th>
+                    <th className="p-4 w-24">Reorder</th>
+                    <th className="p-4">Description</th>
+                    <th className="p-4 text-right w-24">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gold-400/10 text-foreground/80">
+                  {servicesList.map((service, idx) => (
+                    <tr key={service.id} className="hover:bg-gold-400/5 transition-colors">
+                      <td className="p-4">
+                        <img 
+                          src={service.image} 
+                          alt={service.title} 
+                          className="h-10 w-16 rounded object-cover border border-gold-400/20 shadow-inner"
+                        />
+                      </td>
+                      <td className="p-4 font-bold text-foreground">{service.title}</td>
+                      <td className="p-4 font-medium text-foreground">{service.iconName || 'Sparkles'}</td>
+                      <td className="p-4">
+                        <button
+                          onClick={() => handleToggleService(service.id, service.isActive)}
+                          className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-foreground/70"
+                        >
+                          {service.isActive ? (
+                            <ToggleRight className="h-4.5 w-4.5 text-gold-500" />
+                          ) : (
+                            <ToggleLeft className="h-4.5 w-4.5 text-foreground/30" />
+                          )}
+                          <span>{service.isActive ? 'Active' : 'Inactive'}</span>
+                        </button>
+                      </td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => handleReorderService(idx, 'up')}
+                            disabled={idx === 0}
+                            className="p-1 rounded hover:bg-gold-400/10 text-foreground/50 disabled:opacity-30 cursor-pointer"
+                          >
+                            <ArrowUp className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleReorderService(idx, 'down')}
+                            disabled={idx === servicesList.length - 1}
+                            className="p-1 rounded hover:bg-gold-400/10 text-foreground/50 disabled:opacity-30 cursor-pointer"
+                          >
+                            <ArrowDown className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="p-4 text-[11px] leading-relaxed text-foreground/70">{service.desc}</td>
+                      <td className="p-4 text-right">
+                        <div className="flex justify-end gap-1.5">
+                          <button
+                            onClick={() => handleOpenEditService(service)}
+                            className="p-1.5 text-gold-600 hover:text-gold-500 rounded hover:bg-gold-400/10 cursor-pointer"
+                            title="Edit Service"
+                          >
+                            <Edit className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteService(service.id)}
+                            className="p-1.5 text-red-500 hover:text-red-600 rounded hover:bg-red-500/10 cursor-pointer"
+                            title="Delete Service"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {servicesList.length === 0 && (
+                    <tr>
+                      <td colSpan={7} className="p-8 text-center text-foreground/40">No services currently published.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* --- 3. TESTIMONIALS PANEL --- */}
         {activeTab === 'TESTIMONIALS' && (
           <div className="space-y-4">
             <div className="overflow-x-auto border border-gold-400/10 rounded-xl">
@@ -662,19 +777,21 @@ export default function ContentManagementPage() {
                 <thead>
                   <tr className="bg-gold-400/5 font-serif text-[11px] font-bold text-foreground border-b border-gold-400/15">
                     <th className="p-4 w-12">Avatar</th>
-                    <th className="p-4 w-48">Client Name</th>
-                    <th className="p-4 w-40">Celebration Event</th>
-                    <th className="p-4 w-24">Rating</th>
+                    <th className="p-4 w-40">Client Name</th>
+                    <th className="p-4 w-32">Celebration Event</th>
+                    <th className="p-4 w-20">Rating</th>
+                    <th className="p-4 w-20">Status</th>
+                    <th className="p-4 w-24">Reorder</th>
                     <th className="p-4">Review Content</th>
                     <th className="p-4 text-right w-24">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gold-400/10 text-foreground/80">
-                  {testimonialsList.map((test) => (
+                  {testimonialsList.map((test, idx) => (
                     <tr key={test.id} className="hover:bg-gold-400/5 transition-colors">
                       <td className="p-4">
                         <img 
-                          src={test.avatar} 
+                          src={test.avatar || undefined} 
                           alt={test.name} 
                           className="h-9 w-9 rounded-full object-cover border border-gold-400/20 shadow-inner"
                         />
@@ -686,6 +803,37 @@ export default function ContentManagementPage() {
                           {[...Array(test.rating)].map((_, i) => (
                             <Star key={i} className="h-3 w-3 fill-gold-400 text-gold-400" />
                           ))}
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <button
+                          onClick={() => handleToggleTestimonial(test.id, test.isActive)}
+                          className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-foreground/70"
+                        >
+                          {test.isActive ? (
+                            <ToggleRight className="h-4.5 w-4.5 text-gold-500" />
+                          ) : (
+                            <ToggleLeft className="h-4.5 w-4.5 text-foreground/30" />
+                          )}
+                          <span>{test.isActive ? 'Active' : 'Inactive'}</span>
+                        </button>
+                      </td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => handleReorderTestimonial(idx, 'up')}
+                            disabled={idx === 0}
+                            className="p-1 rounded hover:bg-gold-400/10 text-foreground/50 disabled:opacity-30 cursor-pointer"
+                          >
+                            <ArrowUp className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleReorderTestimonial(idx, 'down')}
+                            disabled={idx === testimonialsList.length - 1}
+                            className="p-1 rounded hover:bg-gold-400/10 text-foreground/50 disabled:opacity-30 cursor-pointer"
+                          >
+                            <ArrowDown className="h-3.5 w-3.5" />
+                          </button>
                         </div>
                       </td>
                       <td className="p-4 text-[11px] leading-relaxed text-foreground/70">{test.text}</td>
@@ -711,7 +859,7 @@ export default function ContentManagementPage() {
                   ))}
                   {testimonialsList.length === 0 && (
                     <tr>
-                      <td colSpan={6} className="p-8 text-center text-foreground/40">No client reviews currently published.</td>
+                      <td colSpan={8} className="p-8 text-center text-foreground/40">No client reviews currently published.</td>
                     </tr>
                   )}
                 </tbody>
@@ -720,7 +868,7 @@ export default function ContentManagementPage() {
           </div>
         )}
 
-        {/* --- 3. FAQS PANEL --- */}
+        {/* --- 4. FAQS PANEL --- */}
         {activeTab === 'FAQS' && (
           <div className="space-y-4">
             <div className="overflow-x-auto border border-gold-400/10 rounded-xl">
@@ -728,13 +876,15 @@ export default function ContentManagementPage() {
                 <thead>
                   <tr className="bg-gold-400/5 font-serif text-[11px] font-bold text-foreground border-b border-gold-400/15">
                     <th className="p-4 w-28">Category</th>
-                    <th className="p-4 w-72">Question</th>
+                    <th className="p-4 w-64">Question</th>
+                    <th className="p-4 w-20">Status</th>
+                    <th className="p-4 w-24">Reorder</th>
                     <th className="p-4">Answer Details</th>
                     <th className="p-4 text-right w-24">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gold-400/10 text-foreground/80">
-                  {faqsList.map((faq) => (
+                  {faqsList.map((faq, idx) => (
                     <tr key={faq.id} className="hover:bg-gold-400/5 transition-colors">
                       <td className="p-4">
                         <span className="rounded px-2 py-0.5 bg-gold-400/10 text-gold-500 text-[8px] font-bold uppercase tracking-wider">
@@ -742,6 +892,37 @@ export default function ContentManagementPage() {
                         </span>
                       </td>
                       <td className="p-4 font-bold text-foreground leading-snug">{faq.question}</td>
+                      <td className="p-4">
+                        <button
+                          onClick={() => handleToggleFAQ(faq.id, faq.isActive)}
+                          className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-foreground/70"
+                        >
+                          {faq.isActive ? (
+                            <ToggleRight className="h-4.5 w-4.5 text-gold-500" />
+                          ) : (
+                            <ToggleLeft className="h-4.5 w-4.5 text-foreground/30" />
+                          )}
+                          <span>{faq.isActive ? 'Active' : 'Inactive'}</span>
+                        </button>
+                      </td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => handleReorderFAQ(idx, 'up')}
+                            disabled={idx === 0}
+                            className="p-1 rounded hover:bg-gold-400/10 text-foreground/50 disabled:opacity-30 cursor-pointer"
+                          >
+                            <ArrowUp className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleReorderFAQ(idx, 'down')}
+                            disabled={idx === faqsList.length - 1}
+                            className="p-1 rounded hover:bg-gold-400/10 text-foreground/50 disabled:opacity-30 cursor-pointer"
+                          >
+                            <ArrowDown className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </td>
                       <td className="p-4 text-[11px] leading-relaxed text-foreground/70">{faq.answer}</td>
                       <td className="p-4 text-right">
                         <div className="flex justify-end gap-1.5">
@@ -765,7 +946,7 @@ export default function ContentManagementPage() {
                   ))}
                   {faqsList.length === 0 && (
                     <tr>
-                      <td colSpan={4} className="p-8 text-center text-foreground/40">No FAQ articles published.</td>
+                      <td colSpan={6} className="p-8 text-center text-foreground/40">No FAQ articles published.</td>
                     </tr>
                   )}
                 </tbody>
@@ -774,11 +955,11 @@ export default function ContentManagementPage() {
           </div>
         )}
 
-        {/* --- 4. GALLERY PANEL --- */}
+        {/* --- 5. GALLERY PANEL --- */}
         {activeTab === 'GALLERY' && (
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {galleryList.map((item) => (
+              {galleryList.map((item, idx) => (
                 <div key={item.id} className="group relative rounded-xl overflow-hidden border border-gold-400/10 hover:border-gold-400/30 bg-gold-400/5 transition-all flex flex-col justify-between">
                   <div className="relative aspect-video w-full overflow-hidden bg-zinc-800">
                     <img src={item.image} alt={item.title} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
@@ -790,6 +971,35 @@ export default function ContentManagementPage() {
                     <div>
                       <h4 className="font-serif text-xs font-bold text-foreground truncate">{item.title}</h4>
                       <p className="text-[9px] text-foreground/50 mt-0.5 uppercase tracking-wide">{item.aspect || 'aspect-[4/3]'}</p>
+                    </div>
+                    <div className="flex items-center justify-between border-t border-gold-400/10 pt-2 pb-1">
+                      <button
+                        onClick={() => handleToggleGalleryItem(item.id, item.isActive)}
+                        className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-wider text-foreground/60 hover:text-gold-500"
+                      >
+                        {item.isActive ? (
+                          <ToggleRight className="h-4.5 w-4.5 text-gold-500" />
+                        ) : (
+                          <ToggleLeft className="h-4.5 w-4.5 text-foreground/30" />
+                        )}
+                        <span>{item.isActive ? 'Active' : 'Inactive'}</span>
+                      </button>
+                      <div className="flex items-center gap-0.5">
+                        <button
+                          onClick={() => handleReorderGalleryItem(idx, 'up')}
+                          disabled={idx === 0}
+                          className="p-1 rounded hover:bg-gold-400/10 text-foreground/50 disabled:opacity-30 cursor-pointer"
+                        >
+                          <ArrowUp className="h-3 w-3" />
+                        </button>
+                        <button
+                          onClick={() => handleReorderGalleryItem(idx, 'down')}
+                          disabled={idx === galleryList.length - 1}
+                          className="p-1 rounded hover:bg-gold-400/10 text-foreground/50 disabled:opacity-30 cursor-pointer"
+                        >
+                          <ArrowDown className="h-3 w-3" />
+                        </button>
+                      </div>
                     </div>
                     <div className="flex gap-1.5 justify-end">
                       <button
@@ -1327,6 +1537,158 @@ export default function ContentManagementPage() {
                     className="px-5 py-2 bg-gradient-to-r from-gold-600 to-gold-400 text-zinc-950 font-bold rounded-xl uppercase tracking-wider flex items-center gap-1 cursor-pointer"
                   >
                     <Save className="h-3.5 w-3.5" /> Save Image
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* =======================================================
+          MODAL: SERVICE EDITOR / CREATOR
+      ======================================================= */}
+      <AnimatePresence>
+        {(isAddingService || editingService) && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => { setIsAddingService(false); setEditingService(null); }}
+              className="absolute inset-0 bg-zinc-950/40 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              className="relative w-full max-w-md bg-white dark:bg-zinc-900 border border-gold-400/20 rounded-3xl p-6 shadow-xl space-y-6 z-[60]"
+            >
+              <div className="flex justify-between items-start border-b border-gold-400/10 pb-3">
+                <div>
+                  <h3 className="font-serif text-lg font-bold text-foreground">
+                    {isAddingService ? 'Publish Event Service' : 'Edit Service Details'}
+                  </h3>
+                  <p className="text-[10px] text-foreground/50">Configure service name, description, icon and image</p>
+                </div>
+                <button 
+                  onClick={() => { setIsAddingService(false); setEditingService(null); }}
+                  className="p-1.5 rounded-lg hover:bg-gold-400/15 text-foreground/50 hover:text-gold-500 cursor-pointer"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveService} className="space-y-4 text-xs">
+                <div>
+                  <label className="block font-bold text-foreground/75 mb-1">Service Title</label>
+                  <input 
+                    type="text"
+                    required
+                    value={serviceFormTitle}
+                    onChange={(e) => setServiceFormTitle(e.target.value)}
+                    placeholder="e.g. Royal Stage Styling"
+                    className="w-full rounded-xl border border-gold-400/15 bg-ivory-50/50 dark:bg-zinc-950 px-3 py-2 outline-none focus:border-gold-500 font-semibold"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block font-bold text-foreground/75 mb-1">Lucide Icon Name</label>
+                    <select
+                      value={serviceFormIconName}
+                      onChange={(e) => setServiceFormIconName(e.target.value)}
+                      className="w-full rounded-xl border border-gold-400/15 bg-ivory-50/50 dark:bg-zinc-950 px-3 py-2 outline-none focus:border-gold-500 font-bold"
+                    >
+                      <option value="Sparkles">Sparkles (General)</option>
+                      <option value="Award">Award (Premium)</option>
+                      <option value="Star">Star (Reviews)</option>
+                      <option value="Camera">Camera (Photography)</option>
+                      <option value="Music">Music (DJ/Sound)</option>
+                      <option value="UtensilsCrossed">Utensils (Catering)</option>
+                      <option value="Flower">Flower (Decorations)</option>
+                      <option value="Heart">Heart (Wedding/Rites)</option>
+                      <option value="Mic">Mic (MC/Anchor)</option>
+                      <option value="GlassWater">Drink (Beverages)</option>
+                    </select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <div className="flex justify-between items-center">
+                      <label className="block font-bold text-foreground/75">Service Image</label>
+                      <div className="flex gap-2 text-[9px] uppercase tracking-wider font-extrabold">
+                        <button
+                          type="button"
+                          onClick={() => setServiceImgSource('url')}
+                          className={`px-2 py-0.5 rounded transition-all cursor-pointer ${serviceImgSource === 'url' ? 'bg-gold-500 text-zinc-950 font-bold' : 'bg-gold-400/10 text-gold-500'}`}
+                        >
+                          URL
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setServiceImgSource('file')}
+                          className={`px-2 py-0.5 rounded transition-all cursor-pointer ${serviceImgSource === 'file' ? 'bg-gold-500 text-zinc-950 font-bold' : 'bg-gold-400/10 text-gold-500'}`}
+                        >
+                          Device
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {serviceFormImage && (
+                        <div className="h-10 w-16 shrink-0 rounded-lg border border-gold-400/20 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+                          <img src={serviceFormImage} alt="Preview" className="h-full w-full object-cover" />
+                        </div>
+                      )}
+                      <div className="flex-1">
+                        {serviceImgSource === 'url' ? (
+                          <input 
+                            key="service-image-url"
+                            type="text"
+                            placeholder="https://..."
+                            value={serviceFormImage || ''}
+                            onChange={(e) => setServiceFormImage(e.target.value)}
+                            className="w-full rounded-xl border border-gold-400/15 bg-ivory-50/50 dark:bg-zinc-950 px-3 py-2 outline-none focus:border-gold-500 font-medium"
+                            required={serviceImgSource === 'url'}
+                          />
+                        ) : (
+                          <input 
+                            key="service-image-file"
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleFileChange(e, setServiceFormImage)}
+                            className="w-full text-xs text-foreground/70 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-[10px] file:font-extrabold file:uppercase file:bg-gold-400/10 file:text-gold-500 file:cursor-pointer hover:file:bg-gold-400/20 bg-ivory-50/50 dark:bg-zinc-950 rounded-xl border border-gold-400/15 py-1 px-3 outline-none"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-foreground/75 mb-1">Service Description</label>
+                  <textarea 
+                    required
+                    value={serviceFormDesc}
+                    onChange={(e) => setServiceFormDesc(e.target.value)}
+                    rows={4}
+                    placeholder="Provide a detailed description of the service..."
+                    className="w-full rounded-xl border border-gold-400/15 bg-ivory-50/50 dark:bg-zinc-950 px-3 py-2 outline-none focus:border-gold-500 font-medium leading-relaxed"
+                  />
+                </div>
+
+                <div className="border-t border-gold-400/10 pt-4 flex gap-2 justify-end">
+                  <button 
+                    type="button" 
+                    onClick={() => { setIsAddingService(false); setEditingService(null); }}
+                    className="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-foreground font-bold rounded-xl uppercase tracking-wider cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit"
+                    className="px-5 py-2 bg-gradient-to-r from-gold-600 to-gold-400 text-zinc-950 font-bold rounded-xl uppercase tracking-wider flex items-center gap-1 cursor-pointer"
+                  >
+                    <Save className="h-3.5 w-3.5" /> Publish Service
                   </button>
                 </div>
               </form>
