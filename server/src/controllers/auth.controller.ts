@@ -32,7 +32,10 @@ export class AuthController {
 
       const result = await authService.login(value);
       res.json(result);
-    } catch (error) {
+    } catch (error: any) {
+      if (error && error.message === 'Invalid email or password') {
+        return res.status(401).json({ error: error.message });
+      }
       next(error);
     }
   };

@@ -104,7 +104,7 @@ export default function AdminBookingsPage() {
     setEditCost(b.cost);
     setEditPaid(b.paid);
     setEditNotes(b.notes || '');
-    setEditCoordinatorName(b.coordinatorName || 'Aravind Sharma');
+    setEditCoordinatorName(b.coordinatorName || 'Shalini Meshram');
     setEditCoordinatorPhone(b.coordinatorPhone || '+91 98877 66554');
     setEditLocation(b.location || 'Grand Main Lawn A & B');
     setEditStatus(b.status);

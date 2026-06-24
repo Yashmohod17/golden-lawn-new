@@ -1,26 +1,46 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Lock, Eye, EyeOff, Sparkles, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
+import { Lock, Eye, EyeOff, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
 
 export default function AuthResetPassword() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [token, setToken] = useState('');
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [tokenChecked, setTokenChecked] = useState(false);
+  const [accountType, setAccountType] = useState<'customer' | 'admin'>('customer');
+
+  // Extract token from query parameters on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const urlToken = searchParams.get('token') || '';
+      setToken(urlToken);
+      if (!urlToken) {
+        setError('Password reset token is missing. Please request a new link.');
+      }
+      setTokenChecked(true);
+    }
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    // Validations
+    if (!token) {
+      setError('Reset token is missing. Please initiate forgot password first.');
+      return;
+    }
+
     if (!password || !confirmPassword) {
-      setError('Please fill in both fields.');
+      setError('Please fill in all credentials.');
       return;
     }
 
@@ -30,15 +50,7 @@ export default function AuthResetPassword() {
     }
 
     if (password !== confirmPassword) {
-      setError('New passwords do not match.');
-      return;
-    }
-
-    const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
-    const token = searchParams ? searchParams.get('token') || '' : '';
-
-    if (!token) {
-      setError('Reset token is missing. Please initiate forgot password first.');
+      setError('Passwords do not match.');
       return;
     }
 
@@ -55,14 +67,15 @@ export default function AuthResetPassword() {
         const data = await res.json();
         setIsLoading(false);
         if (res.ok) {
+          setAccountType(data.accountType || 'customer');
           setSuccess(true);
         } else {
-          setError(data.error || 'Failed to reset password. The code might be expired.');
+          setError(data.error || 'Failed to reset password. The link might be expired.');
         }
       })
       .catch(() => {
         setIsLoading(false);
-        setError('Network error. Failed to reset password.');
+        setError('A network error occurred. Failed to reset password.');
       });
   };
 
@@ -72,7 +85,7 @@ export default function AuthResetPassword() {
       {success ? (
         /* Success Screen */
         <div className="text-center py-6 space-y-6">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400 border border-emerald-500/20 shadow-inner">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400 border border-emerald-500/20 shadow-inner animate-bounce-once">
             <CheckCircle2 className="h-8 w-8 stroke-[2.5]" />
           </div>
           
@@ -86,7 +99,7 @@ export default function AuthResetPassword() {
           </div>
 
           <Link
-            href="/auth/login"
+            href={accountType === 'admin' ? '/admin/login' : '/portal/login'}
             className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-gold-600 to-gold-400 py-3.5 font-sans text-xs font-bold tracking-widest text-zinc-950 uppercase shadow-lg shadow-gold-600/15 hover:from-gold-500 hover:to-gold-300 transition-all cursor-pointer"
           >
             <span>Proceed to Login</span>
@@ -101,7 +114,7 @@ export default function AuthResetPassword() {
               Set New Password
             </h3>
             <p className="text-xs text-foreground/50 mt-1">
-              Establish a secure credentials key for your customer account
+              Establish a secure credentials key for your account
             </p>
           </div>
 
@@ -127,13 +140,14 @@ export default function AuthResetPassword() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="At least 6 characters"
-                  disabled={isLoading}
+                  disabled={isLoading || (tokenChecked && !token)}
                   className="w-full rounded-xl border border-gold-400/15 bg-ivory-50/50 dark:bg-zinc-900/50 pl-10 pr-10 py-3 text-xs text-foreground outline-none focus:border-gold-400 focus:bg-white dark:focus:bg-zinc-950 transition-all disabled:opacity-50"
+                  required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  disabled={isLoading}
+                  disabled={isLoading || (tokenChecked && !token)}
                   className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-foreground/45 hover:text-gold-500 transition-colors"
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -155,8 +169,9 @@ export default function AuthResetPassword() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Re-enter password"
-                  disabled={isLoading}
+                  disabled={isLoading || (tokenChecked && !token)}
                   className="w-full rounded-xl border border-gold-400/15 bg-ivory-50/50 dark:bg-zinc-900/50 pl-10 pr-10 py-3 text-xs text-foreground outline-none focus:border-gold-400 focus:bg-white dark:focus:bg-zinc-950 transition-all disabled:opacity-50"
+                  required
                 />
               </div>
             </div>
@@ -164,11 +179,14 @@ export default function AuthResetPassword() {
             {/* Submit */}
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || (tokenChecked && !token)}
               className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-gold-600 to-gold-400 py-3.5 font-sans text-xs font-bold tracking-widest text-zinc-950 uppercase shadow-lg shadow-gold-600/15 hover:from-gold-500 hover:to-gold-300 disabled:opacity-50 transition-all cursor-pointer mt-2"
             >
               {isLoading ? (
-                <div className="h-4 w-4 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin" />
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin" />
+                  <span>Resetting...</span>
+                </div>
               ) : (
                 <span>Confirm Reset Password</span>
               )}
@@ -176,7 +194,6 @@ export default function AuthResetPassword() {
           </form>
         </div>
       )}
-
     </div>
   );
 }

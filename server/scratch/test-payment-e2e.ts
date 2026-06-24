@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -14,10 +15,12 @@ async function runTests() {
   // 1. Authenticate Owner
   try {
     console.log('1. Authenticating Owner account...');
+    const ownerEmail = process.env.OWNER_EMAIL || 'owner@goldencelebration.com';
+    const ownerPassword = process.env.OWNER_PASSWORD || 'owner123';
     const res = await fetch(`${BASE_URL}/admin/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'owner@goldencelebration.com', password: 'owner123' })
+      body: JSON.stringify({ email: ownerEmail, password: ownerPassword })
     });
     
     if (!res.ok) throw new Error(`Status ${res.status}`);

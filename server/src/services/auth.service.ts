@@ -1,8 +1,10 @@
 import prisma from '../config/database';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import { RegisterInput, LoginInput, ResetPasswordInput, ChangePasswordInput } from '../validations/auth.validation';
 import { NotificationService } from './notification.service';
+import { EmailService } from './email.service';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'golden_celebrations_secret_key_123_abc_xyz';
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'golden_celebrations_refresh_secret_key_987_def_uvw';
@@ -193,90 +195,147 @@ export class AuthService {
   }
 
   async forgotPassword(email: string) {
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      throw new Error('A valid email address is required');
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Look up customer or user (no account enumeration in returned response, but search DB first)
     const customer = await prisma.customer.findUnique({
-      where: { email },
+      where: { email: normalizedEmail },
+    });
+    const user = await prisma.user.findUnique({
+      where: { email: normalizedEmail },
     });
 
-    if (!customer) {
-      throw new Error('Customer with this email does not exist');
-    }
+    const accountExists = !!(customer || user);
 
-    // Generate a 6-digit verification code
-    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
+    if (accountExists) {
+      // Generate secure token
+      const token = crypto.randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
 
-    await prisma.customer.update({
-      where: { id: customer.id },
-      data: {
-        resetToken: resetCode,
-        resetTokenExpiry: expiry,
-      },
-    });
-
-    // Create notification for password reset request using NotificationService
-    try {
-      await NotificationService.sendNotification({
-        customerId: customer.id,
-        title: 'Password Reset Request',
-        message: `A password reset request was made. Use code ${resetCode} to complete reset.`,
-        category: 'SYSTEM',
-        priority: 'HIGH',
-        type: 'warning'
+      // Save to PasswordResetToken table
+      await prisma.passwordResetToken.create({
+        data: {
+          email: normalizedEmail,
+          token,
+          expiresAt,
+        },
       });
-    } catch (err) {
-      console.error('Failed to send reset code notification:', err);
+
+      // Send email via Resend (use EmailService)
+      const resetLink = `http://localhost:4000/auth/reset-password?token=${token}`;
+
+      try {
+        await EmailService.sendPasswordReset(normalizedEmail, {
+          resetLink,
+          expiresAt
+        });
+
+        // Also add system/in-app notification if customer exists
+        if (customer) {
+          await NotificationService.sendNotification({
+            customerId: customer.id,
+            title: 'Password Reset Request Sent',
+            message: `A password reset link has been dispatched to your email address: ${normalizedEmail}.`,
+            category: 'SYSTEM',
+            priority: 'HIGH',
+            type: 'info',
+          });
+        }
+      } catch (err) {
+        console.error('Failed to send reset email:', err);
+      }
     }
 
-    // In a real application, email is dispatched. In this frontend-only/demo environment, we also return the token.
+    // Generic response to prevent account enumeration
     return {
-      message: 'Password reset code has been sent to your email and notification inbox.',
-      resetCode, // return resetCode to simplify testing/integration in demo portal
+      message: 'If the provided email is registered, a password reset link has been sent to it.',
     };
   }
 
   async resetPassword(data: ResetPasswordInput) {
-    const customer = await prisma.customer.findFirst({
-      where: {
-        resetToken: data.token,
-        resetTokenExpiry: {
-          gt: new Date(),
-        },
-      },
+    if (!data.token) {
+      throw new Error('Reset token is required');
+    }
+    if (!data.password || data.password.length < 6) {
+      throw new Error('Password must be at least 6 characters long');
+    }
+
+    // Retrieve the token record
+    const resetTokenRecord = await prisma.passwordResetToken.findUnique({
+      where: { token: data.token },
     });
 
-    if (!customer) {
+    if (!resetTokenRecord || resetTokenRecord.used || resetTokenRecord.expiresAt < new Date()) {
       throw new Error('Invalid or expired reset token');
     }
 
+    // Hash new password
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
-    await prisma.customer.update({
-      where: { id: customer.id },
-      data: {
-        password: hashedPassword,
-        resetToken: null,
-        resetTokenExpiry: null,
-        // Invalidate current refresh tokens so they have to login again
-        refreshToken: null,
-      },
-    });
+    let accountUpdated = false;
+    let accountType: 'customer' | 'admin' = 'customer';
 
-    // Create success notification using NotificationService
-    try {
-      await NotificationService.sendNotification({
-        customerId: customer.id,
-        title: 'Password Reset Successful',
-        message: 'Your portal account password has been successfully updated.',
-        category: 'SYSTEM',
-        priority: 'MEDIUM',
-        type: 'success'
+    // Update Customer or User table
+    const customer = await prisma.customer.findUnique({
+      where: { email: resetTokenRecord.email },
+    });
+    if (customer) {
+      await prisma.customer.update({
+        where: { id: customer.id },
+        data: {
+          password: hashedPassword,
+          refreshToken: null, // invalidate sessions
+        },
       });
-    } catch (err) {
-      console.error('Failed to send reset success notification:', err);
+      accountUpdated = true;
+      accountType = 'customer';
+
+      // In-app notification
+      try {
+        await NotificationService.sendNotification({
+          customerId: customer.id,
+          title: 'Password Reset Successful',
+          message: 'Your portal account password has been successfully updated.',
+          category: 'SYSTEM',
+          priority: 'MEDIUM',
+          type: 'success',
+        });
+      } catch (err) {
+        console.error('Failed to send reset success notification:', err);
+      }
+    } else {
+      const user = await prisma.user.findUnique({
+        where: { email: resetTokenRecord.email },
+      });
+      if (user) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            password: hashedPassword,
+          },
+        });
+        accountUpdated = true;
+        accountType = 'admin';
+      }
     }
+
+    if (!accountUpdated) {
+      throw new Error('Account associated with this token was not found.');
+    }
+
+    // Mark token as used (single use)
+    await prisma.passwordResetToken.update({
+      where: { id: resetTokenRecord.id },
+      data: { used: true },
+    });
 
     return {
       message: 'Password has been reset successfully. Please login with your new password.',
+      accountType,
     };
   }
 

@@ -8,7 +8,7 @@ export function WhatsAppButton() {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
 
-  const phoneNumber = '919876543210'; // Simulated contact number
+  const phoneNumber = '919823464705'; // Simulated contact number
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();

@@ -39,12 +39,12 @@ export class AdminController {
       });
 
       if (!user) {
-        return res.status(401).json({ error: 'Invalid administrative email or password.' });
+        return res.status(401).json({ error: 'Invalid email or password.' });
       }
 
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
-        return res.status(401).json({ error: 'Invalid administrative email or password.' });
+        return res.status(401).json({ error: 'Invalid email or password.' });
       }
 
       const roleName = user.role?.name || 'STAFF';

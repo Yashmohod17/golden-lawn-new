@@ -1,10 +1,1247 @@
 
 ========================================
 [MOCK EMAIL DELIVERED]
-Timestamp: 2026-06-16T17:56:26.952Z
+Timestamp: 2026-06-24T18:52:12.931Z
 From: Golden Celebration Lawn <onboarding@resend.dev>
-To: staff@goldencelebration.com
-Subject: Lawn Main Power Generator Maintenance
+To: customer@example.com
+Subject: Thank You for Your Inquiry - Golden Celebrations Lawn
 ----------------------------------------
-Maintenance schedule: Wed 10:00 - 14:00.
+HTML Content:
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Thank You for Your Inquiry - Golden Celebrations Lawn</title>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #FAF9F6;
+      color: #1c1917;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrapper {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+    .header {
+      background: linear-gradient(135deg, #1c1917 0%, #2e2a24 100%);
+      padding: 30px;
+      text-align: center;
+      border-bottom: 3px solid #D4AF37;
+    }
+    .logo {
+      font-family: 'Georgia', serif;
+      font-size: 24px;
+      font-weight: bold;
+      color: #D4AF37;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    .tagline {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin: 5px 0 0 0;
+    }
+    .content {
+      padding: 40px 30px;
+      line-height: 1.6;
+    }
+    h1 {
+      font-family: 'Georgia', serif;
+      font-size: 20px;
+      color: #1c1917;
+      margin-top: 0;
+      margin-bottom: 18px;
+      font-weight: 700;
+    }
+    p {
+      font-size: 14px;
+      color: #44403c;
+      margin-bottom: 18px;
+    }
+    .highlight-card {
+      background-color: #FAF9F6;
+      border-left: 4px solid #D4AF37;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 25px 0;
+    }
+    .grid-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    .grid-table th, .grid-table td {
+      padding: 12px 15px;
+      text-align: left;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    }
+    .grid-table th {
+      color: #78716c;
+      font-weight: 600;
+      width: 40%;
+    }
+    .grid-table td {
+      color: #1c1917;
+      font-weight: 700;
+    }
+    .btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #c5a880 0%, #d4af37 100%);
+      color: #1c1917 !important;
+      text-decoration: none;
+      padding: 12px 30px;
+      font-weight: bold;
+      border-radius: 8px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 10px;
+      box-shadow: 0 4px 10px rgba(212, 175, 55, 0.15);
+      text-align: center;
+    }
+    .footer {
+      background-color: #faf9f6;
+      padding: 25px;
+      text-align: center;
+      font-size: 11px;
+      color: #78716c;
+      border-top: 1px solid rgba(212, 175, 55, 0.05);
+    }
+    .footer p {
+      margin: 5px 0;
+      font-size: 11px;
+      color: #78716c;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <div class="logo">Golden Celebrations</div>
+      <div class="tagline">Where Every Milestone Glimmers</div>
+    </div>
+    <div class="content">
+      
+      <h1>We've Received Your Event Inquiry!</h1>
+      <p>Dear Aishwarya Rai,</p>
+      <p>Thank you for reaching out to Golden Celebrations Lawn. We are excited about the possibility of hosting your milestone event.</p>
+      
+      <div class="highlight-card">
+        <h3>Inquiry Details</h3>
+        <table class="grid-table">
+          <tr>
+            <th>Event Type</th>
+            <td>Wedding Reception</td>
+          </tr>
+          <tr>
+            <th>Planned Date</th>
+            <td>2026-10-12</td>
+          </tr>
+          <tr>
+            <th>Estimated Guests</th>
+            <td>400</td>
+          </tr>
+          <tr><th>Customer Notes</th><td>Require pure-vegetarian catering and royal gold staging themes.</td></tr>
+        </table>
+      </div>
+
+      <p>Our staging coordinators are reviewing your details. <strong>Note:</strong> To freeze this date on our public calendar immediately, please visit the portal page and submit the slot reservation deposit.</p>
+    
+    </div>
+    <div class="footer">
+      <p><strong>The Golden Celebrations Lawn</strong></p>
+      <p>Golden Celebrations Lawn, Narsala Road, Near Hudkeshwar, Nagpur, MH - 440034</p>
+      <p>Phone: +91 9823464705 | Email: shalini.meshram@gmail.com</p>
+      <p>&copy; 2026 Golden Celebrations Lawn. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+========================================
+
+========================================
+[MOCK EMAIL DELIVERED]
+Timestamp: 2026-06-24T18:52:12.935Z
+From: Golden Celebration Lawn <onboarding@resend.dev>
+To: shalini.meshram@gmail.com
+Subject: [INQUIRY] New Event Inquiry - Aishwarya Rai
+----------------------------------------
+HTML Content:
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>[INQUIRY] New Event Inquiry - Aishwarya Rai</title>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #FAF9F6;
+      color: #1c1917;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrapper {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+    .header {
+      background: linear-gradient(135deg, #1c1917 0%, #2e2a24 100%);
+      padding: 30px;
+      text-align: center;
+      border-bottom: 3px solid #D4AF37;
+    }
+    .logo {
+      font-family: 'Georgia', serif;
+      font-size: 24px;
+      font-weight: bold;
+      color: #D4AF37;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    .tagline {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin: 5px 0 0 0;
+    }
+    .content {
+      padding: 40px 30px;
+      line-height: 1.6;
+    }
+    h1 {
+      font-family: 'Georgia', serif;
+      font-size: 20px;
+      color: #1c1917;
+      margin-top: 0;
+      margin-bottom: 18px;
+      font-weight: 700;
+    }
+    p {
+      font-size: 14px;
+      color: #44403c;
+      margin-bottom: 18px;
+    }
+    .highlight-card {
+      background-color: #FAF9F6;
+      border-left: 4px solid #D4AF37;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 25px 0;
+    }
+    .grid-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    .grid-table th, .grid-table td {
+      padding: 12px 15px;
+      text-align: left;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    }
+    .grid-table th {
+      color: #78716c;
+      font-weight: 600;
+      width: 40%;
+    }
+    .grid-table td {
+      color: #1c1917;
+      font-weight: 700;
+    }
+    .btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #c5a880 0%, #d4af37 100%);
+      color: #1c1917 !important;
+      text-decoration: none;
+      padding: 12px 30px;
+      font-weight: bold;
+      border-radius: 8px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 10px;
+      box-shadow: 0 4px 10px rgba(212, 175, 55, 0.15);
+      text-align: center;
+    }
+    .footer {
+      background-color: #faf9f6;
+      padding: 25px;
+      text-align: center;
+      font-size: 11px;
+      color: #78716c;
+      border-top: 1px solid rgba(212, 175, 55, 0.05);
+    }
+    .footer p {
+      margin: 5px 0;
+      font-size: 11px;
+      color: #78716c;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <div class="logo">Golden Celebrations</div>
+      <div class="tagline">Where Every Milestone Glimmers</div>
+    </div>
+    <div class="content">
+      
+      <h1>New Customer Event Inquiry</h1>
+      <p>A new inquiry was submitted via the contact form:</p>
+      
+      <div class="highlight-card">
+        <h3>Inquiry Details</h3>
+        <table class="grid-table">
+          <tr>
+            <th>Name</th>
+            <td>Aishwarya Rai</td>
+          </tr>
+          <tr>
+            <th>Email</th>
+            <td>customer@example.com</td>
+          </tr>
+          <tr>
+            <th>Phone</th>
+            <td>+91 99887 76655</td>
+          </tr>
+          <tr>
+            <th>Event Type</th>
+            <td>Wedding Reception</td>
+          </tr>
+          <tr>
+            <th>Requested Date</th>
+            <td>2026-10-12</td>
+          </tr>
+          <tr>
+            <th>Guests Count</th>
+            <td>400</td>
+          </tr>
+          <tr><th>Special Requests</th><td>Require pure-vegetarian catering and royal gold staging themes.</td></tr>
+        </table>
+      </div>
+      
+      <p>This lead is listed in the CRM panel. Please check and assign a follow-up date.</p>
+    
+    </div>
+    <div class="footer">
+      <p><strong>The Golden Celebrations Lawn</strong></p>
+      <p>Golden Celebrations Lawn, Narsala Road, Near Hudkeshwar, Nagpur, MH - 440034</p>
+      <p>Phone: +91 9823464705 | Email: shalini.meshram@gmail.com</p>
+      <p>&copy; 2026 Golden Celebrations Lawn. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+========================================
+
+========================================
+[MOCK EMAIL DELIVERED]
+Timestamp: 2026-06-24T18:52:12.957Z
+From: Golden Celebration Lawn <onboarding@resend.dev>
+To: customer@example.com
+Subject: Date Reserved Successfully – Action Required Within 48 Hours
+----------------------------------------
+HTML Content:
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Date Reserved Successfully – Action Required Within 48 Hours</title>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #FAF9F6;
+      color: #1c1917;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrapper {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+    .header {
+      background: linear-gradient(135deg, #1c1917 0%, #2e2a24 100%);
+      padding: 30px;
+      text-align: center;
+      border-bottom: 3px solid #D4AF37;
+    }
+    .logo {
+      font-family: 'Georgia', serif;
+      font-size: 24px;
+      font-weight: bold;
+      color: #D4AF37;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    .tagline {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin: 5px 0 0 0;
+    }
+    .content {
+      padding: 40px 30px;
+      line-height: 1.6;
+    }
+    h1 {
+      font-family: 'Georgia', serif;
+      font-size: 20px;
+      color: #1c1917;
+      margin-top: 0;
+      margin-bottom: 18px;
+      font-weight: 700;
+    }
+    p {
+      font-size: 14px;
+      color: #44403c;
+      margin-bottom: 18px;
+    }
+    .highlight-card {
+      background-color: #FAF9F6;
+      border-left: 4px solid #D4AF37;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 25px 0;
+    }
+    .grid-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    .grid-table th, .grid-table td {
+      padding: 12px 15px;
+      text-align: left;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    }
+    .grid-table th {
+      color: #78716c;
+      font-weight: 600;
+      width: 40%;
+    }
+    .grid-table td {
+      color: #1c1917;
+      font-weight: 700;
+    }
+    .btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #c5a880 0%, #d4af37 100%);
+      color: #1c1917 !important;
+      text-decoration: none;
+      padding: 12px 30px;
+      font-weight: bold;
+      border-radius: 8px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 10px;
+      box-shadow: 0 4px 10px rgba(212, 175, 55, 0.15);
+      text-align: center;
+    }
+    .footer {
+      background-color: #faf9f6;
+      padding: 25px;
+      text-align: center;
+      font-size: 11px;
+      color: #78716c;
+      border-top: 1px solid rgba(212, 175, 55, 0.05);
+    }
+    .footer p {
+      margin: 5px 0;
+      font-size: 11px;
+      color: #78716c;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <div class="logo">Golden Celebrations</div>
+      <div class="tagline">Where Every Milestone Glimmers</div>
+    </div>
+    <div class="content">
+      
+      <h1>Date Reserved Successfully!</h1>
+      <p>Dear Aishwarya Rai,</p>
+      <p>Thank you for choosing Golden Celebrations Lawn.</p>
+      <p>We have successfully received your reservation amount of ₹500 and your selected event date has been reserved temporarily.</p>
+      
+      <div class="highlight-card">
+        <h3>Reservation Details</h3>
+        <table class="grid-table">
+          <tr>
+            <th>Reservation ID</th>
+            <td>GC-2026-1012</td>
+          </tr>
+          <tr>
+            <th>Event Date</th>
+            <td>2026-10-12</td>
+          </tr>
+          <tr>
+            <th>Reservation Amount Paid</th>
+            <td>₹500</td>
+          </tr>
+          <tr style="color: #b91c1c;">
+            <th>Reservation Valid Until</th>
+            <td><strong>26 Jun 2026, 11:30 PM</strong></td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="highlight-card" style="border-left-color: #b91c1c; background-color: #fef2f2;">
+        <h3 style="color: #b91c1c; margin-top: 0;">⚠️ Important Notice</h3>
+        <p style="font-size: 13px; color: #7f1d1d; margin-bottom: 0;">
+          This payment reserves your selected date for <strong>48 hours only</strong>.
+          To confirm your booking permanently, you must visit Golden Celebrations Lawn and complete the booking process within the reservation period.
+        </p>
+        <p style="font-size: 13px; color: #7f1d1d; margin-top: 10px; margin-bottom: 0;">
+          If the booking is not completed within 48 hours:
+        </p>
+        <ul style="font-size: 13px; color: #7f1d1d; margin-top: 5px; margin-bottom: 0; padding-left: 20px;">
+          <li>The reserved date will be released automatically.</li>
+          <li>The slot may become available to other customers.</li>
+          <li>The reservation amount of ₹500 will not be refunded.</li>
+        </ul>
+      </div>
+
+      <p>For assistance, please contact our coordinator:</p>
+      <p style="margin-bottom: 5px;">📞 <strong>Phone:</strong> +91 98877 66554</p>
+      <p>✉️ <strong>Email:</strong> shalini.meshram@gmail.com</p>
+    
+    </div>
+    <div class="footer">
+      <p><strong>The Golden Celebrations Lawn</strong></p>
+      <p>Golden Celebrations Lawn, Narsala Road, Near Hudkeshwar, Nagpur, MH - 440034</p>
+      <p>Phone: +91 9823464705 | Email: shalini.meshram@gmail.com</p>
+      <p>&copy; 2026 Golden Celebrations Lawn. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+========================================
+
+========================================
+[MOCK EMAIL DELIVERED]
+Timestamp: 2026-06-24T18:52:12.960Z
+From: Golden Celebration Lawn <onboarding@resend.dev>
+To: shalini.meshram@gmail.com
+Subject: [ALERT] New Confirmed Booking - Aishwarya Rai
+----------------------------------------
+HTML Content:
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>[ALERT] New Confirmed Booking - Aishwarya Rai</title>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #FAF9F6;
+      color: #1c1917;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrapper {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+    .header {
+      background: linear-gradient(135deg, #1c1917 0%, #2e2a24 100%);
+      padding: 30px;
+      text-align: center;
+      border-bottom: 3px solid #D4AF37;
+    }
+    .logo {
+      font-family: 'Georgia', serif;
+      font-size: 24px;
+      font-weight: bold;
+      color: #D4AF37;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    .tagline {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin: 5px 0 0 0;
+    }
+    .content {
+      padding: 40px 30px;
+      line-height: 1.6;
+    }
+    h1 {
+      font-family: 'Georgia', serif;
+      font-size: 20px;
+      color: #1c1917;
+      margin-top: 0;
+      margin-bottom: 18px;
+      font-weight: 700;
+    }
+    p {
+      font-size: 14px;
+      color: #44403c;
+      margin-bottom: 18px;
+    }
+    .highlight-card {
+      background-color: #FAF9F6;
+      border-left: 4px solid #D4AF37;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 25px 0;
+    }
+    .grid-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    .grid-table th, .grid-table td {
+      padding: 12px 15px;
+      text-align: left;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    }
+    .grid-table th {
+      color: #78716c;
+      font-weight: 600;
+      width: 40%;
+    }
+    .grid-table td {
+      color: #1c1917;
+      font-weight: 700;
+    }
+    .btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #c5a880 0%, #d4af37 100%);
+      color: #1c1917 !important;
+      text-decoration: none;
+      padding: 12px 30px;
+      font-weight: bold;
+      border-radius: 8px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 10px;
+      box-shadow: 0 4px 10px rgba(212, 175, 55, 0.15);
+      text-align: center;
+    }
+    .footer {
+      background-color: #faf9f6;
+      padding: 25px;
+      text-align: center;
+      font-size: 11px;
+      color: #78716c;
+      border-top: 1px solid rgba(212, 175, 55, 0.05);
+    }
+    .footer p {
+      margin: 5px 0;
+      font-size: 11px;
+      color: #78716c;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <div class="logo">Golden Celebrations</div>
+      <div class="tagline">Where Every Milestone Glimmers</div>
+    </div>
+    <div class="content">
+      
+      <h1>New Confirmed Event Booking</h1>
+      <p>Owner Dashboard Alert,</p>
+      <p>A new customer has successfully completed their slot reservation payment.</p>
+      
+      <div class="highlight-card">
+        <h3>Booking Summary</h3>
+        <table class="grid-table">
+          <tr>
+            <th>Customer Name</th>
+            <td>Aishwarya Rai</td>
+          </tr>
+          <tr>
+            <th>Customer Email</th>
+            <td>customer@example.com</td>
+          </tr>
+          <tr>
+            <th>Customer Phone</th>
+            <td>+91 99887 76655</td>
+          </tr>
+          <tr>
+            <th>Booking ID</th>
+            <td>GC-2026-1012</td>
+          </tr>
+          <tr>
+            <th>Event Date</th>
+            <td>2026-10-12</td>
+          </tr>
+          <tr>
+            <th>Event Type</th>
+            <td>Wedding Reception</td>
+          </tr>
+          <tr>
+            <th>Amount Received</th>
+            <td>₹500</td>
+          </tr>
+        </table>
+      </div>
+
+      <p>Please review coordinates and assign layout staging milestones in the Admin Dashboard.</p>
+    
+    </div>
+    <div class="footer">
+      <p><strong>The Golden Celebrations Lawn</strong></p>
+      <p>Golden Celebrations Lawn, Narsala Road, Near Hudkeshwar, Nagpur, MH - 440034</p>
+      <p>Phone: +91 9823464705 | Email: shalini.meshram@gmail.com</p>
+      <p>&copy; 2026 Golden Celebrations Lawn. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+========================================
+
+========================================
+[MOCK EMAIL DELIVERED]
+Timestamp: 2026-06-24T18:52:12.962Z
+From: Golden Celebration Lawn <onboarding@resend.dev>
+To: customer@example.com
+Subject: Payment Receipt - Golden Celebrations Lawn
+----------------------------------------
+HTML Content:
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Payment Receipt - Golden Celebrations Lawn</title>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #FAF9F6;
+      color: #1c1917;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrapper {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+    .header {
+      background: linear-gradient(135deg, #1c1917 0%, #2e2a24 100%);
+      padding: 30px;
+      text-align: center;
+      border-bottom: 3px solid #D4AF37;
+    }
+    .logo {
+      font-family: 'Georgia', serif;
+      font-size: 24px;
+      font-weight: bold;
+      color: #D4AF37;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    .tagline {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin: 5px 0 0 0;
+    }
+    .content {
+      padding: 40px 30px;
+      line-height: 1.6;
+    }
+    h1 {
+      font-family: 'Georgia', serif;
+      font-size: 20px;
+      color: #1c1917;
+      margin-top: 0;
+      margin-bottom: 18px;
+      font-weight: 700;
+    }
+    p {
+      font-size: 14px;
+      color: #44403c;
+      margin-bottom: 18px;
+    }
+    .highlight-card {
+      background-color: #FAF9F6;
+      border-left: 4px solid #D4AF37;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 25px 0;
+    }
+    .grid-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    .grid-table th, .grid-table td {
+      padding: 12px 15px;
+      text-align: left;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    }
+    .grid-table th {
+      color: #78716c;
+      font-weight: 600;
+      width: 40%;
+    }
+    .grid-table td {
+      color: #1c1917;
+      font-weight: 700;
+    }
+    .btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #c5a880 0%, #d4af37 100%);
+      color: #1c1917 !important;
+      text-decoration: none;
+      padding: 12px 30px;
+      font-weight: bold;
+      border-radius: 8px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 10px;
+      box-shadow: 0 4px 10px rgba(212, 175, 55, 0.15);
+      text-align: center;
+    }
+    .footer {
+      background-color: #faf9f6;
+      padding: 25px;
+      text-align: center;
+      font-size: 11px;
+      color: #78716c;
+      border-top: 1px solid rgba(212, 175, 55, 0.05);
+    }
+    .footer p {
+      margin: 5px 0;
+      font-size: 11px;
+      color: #78716c;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <div class="logo">Golden Celebrations</div>
+      <div class="tagline">Where Every Milestone Glimmers</div>
+    </div>
+    <div class="content">
+      
+      <h1>Payment Receipt Received</h1>
+      <p>Dear Aishwarya Rai,</p>
+      <p>Thank you for your payment. This email serves as an official receipt for the transaction listed below.</p>
+      
+      <div class="highlight-card">
+        <h3>Transaction Record</h3>
+        <table class="grid-table">
+          <tr>
+            <th>Booking ID</th>
+            <td>GC-2026-1012</td>
+          </tr>
+          <tr>
+            <th>Transaction Reference</th>
+            <td>pay_reserve_987654</td>
+          </tr>
+          <tr>
+            <th>Payment Date</th>
+            <td>2026-06-24</td>
+          </tr>
+          <tr>
+            <th>Amount Paid</th>
+            <td>₹500</td>
+          </tr>
+          <tr>
+            <th>Remaining Balance Due</th>
+            <td>₹2,49,500</td>
+          </tr>
+        </table>
+      </div>
+    
+    </div>
+    <div class="footer">
+      <p><strong>The Golden Celebrations Lawn</strong></p>
+      <p>Golden Celebrations Lawn, Narsala Road, Near Hudkeshwar, Nagpur, MH - 440034</p>
+      <p>Phone: +91 9823464705 | Email: shalini.meshram@gmail.com</p>
+      <p>&copy; 2026 Golden Celebrations Lawn. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+========================================
+
+========================================
+[MOCK EMAIL DELIVERED]
+Timestamp: 2026-06-24T18:52:12.964Z
+From: Golden Celebration Lawn <onboarding@resend.dev>
+To: customer@example.com
+Subject: Booking Cancellation: Event ID GC-2026-1012
+----------------------------------------
+HTML Content:
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Booking Cancellation: Event ID GC-2026-1012</title>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #FAF9F6;
+      color: #1c1917;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrapper {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+    .header {
+      background: linear-gradient(135deg, #1c1917 0%, #2e2a24 100%);
+      padding: 30px;
+      text-align: center;
+      border-bottom: 3px solid #D4AF37;
+    }
+    .logo {
+      font-family: 'Georgia', serif;
+      font-size: 24px;
+      font-weight: bold;
+      color: #D4AF37;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    .tagline {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin: 5px 0 0 0;
+    }
+    .content {
+      padding: 40px 30px;
+      line-height: 1.6;
+    }
+    h1 {
+      font-family: 'Georgia', serif;
+      font-size: 20px;
+      color: #1c1917;
+      margin-top: 0;
+      margin-bottom: 18px;
+      font-weight: 700;
+    }
+    p {
+      font-size: 14px;
+      color: #44403c;
+      margin-bottom: 18px;
+    }
+    .highlight-card {
+      background-color: #FAF9F6;
+      border-left: 4px solid #D4AF37;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 25px 0;
+    }
+    .grid-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    .grid-table th, .grid-table td {
+      padding: 12px 15px;
+      text-align: left;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    }
+    .grid-table th {
+      color: #78716c;
+      font-weight: 600;
+      width: 40%;
+    }
+    .grid-table td {
+      color: #1c1917;
+      font-weight: 700;
+    }
+    .btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #c5a880 0%, #d4af37 100%);
+      color: #1c1917 !important;
+      text-decoration: none;
+      padding: 12px 30px;
+      font-weight: bold;
+      border-radius: 8px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 10px;
+      box-shadow: 0 4px 10px rgba(212, 175, 55, 0.15);
+      text-align: center;
+    }
+    .footer {
+      background-color: #faf9f6;
+      padding: 25px;
+      text-align: center;
+      font-size: 11px;
+      color: #78716c;
+      border-top: 1px solid rgba(212, 175, 55, 0.05);
+    }
+    .footer p {
+      margin: 5px 0;
+      font-size: 11px;
+      color: #78716c;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <div class="logo">Golden Celebrations</div>
+      <div class="tagline">Where Every Milestone Glimmers</div>
+    </div>
+    <div class="content">
+      
+      <h1>Booking Cancelled</h1>
+      <p>Dear Aishwarya Rai,</p>
+      <p>This email confirms that your event booking for <strong>Wedding Reception</strong> on <strong>2026-10-12</strong> has been cancelled.</p>
+      
+      <div class="highlight-card">
+        <h3>Cancellation Summary</h3>
+        <table class="grid-table">
+          <tr>
+            <th>Booking ID</th>
+            <td>GC-2026-1012</td>
+          </tr>
+          <tr>
+            <th>Event Date</th>
+            <td>2026-10-12</td>
+          </tr>
+          <tr>
+            <th>Event Type</th>
+            <td>Wedding Reception</td>
+          </tr>
+          <tr>
+            <th>Status</th>
+            <td style="color: #b91c1c;">CANCELLED</td>
+          </tr>
+          <tr><th>Refund Details</th><td>Processed cancellation for booking with ₹500 paid. Refund is subject to cancellation terms.</td></tr>
+        </table>
+      </div>
+
+      <p>If this was done in error or if you have questions regarding our refund policies, please immediately contact our coordinator Shalini Meshram at +91 9823464705.</p>
+    
+    </div>
+    <div class="footer">
+      <p><strong>The Golden Celebrations Lawn</strong></p>
+      <p>Golden Celebrations Lawn, Narsala Road, Near Hudkeshwar, Nagpur, MH - 440034</p>
+      <p>Phone: +91 9823464705 | Email: shalini.meshram@gmail.com</p>
+      <p>&copy; 2026 Golden Celebrations Lawn. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+========================================
+
+========================================
+[MOCK EMAIL DELIVERED]
+Timestamp: 2026-06-24T18:52:12.974Z
+From: Golden Celebration Lawn <onboarding@resend.dev>
+To: customer@example.com
+Subject: Password Reset Request - Golden Celebrations
+----------------------------------------
+HTML Content:
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Password Reset Request - Golden Celebrations</title>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #FAF9F6;
+      color: #1c1917;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrapper {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+    .header {
+      background: linear-gradient(135deg, #1c1917 0%, #2e2a24 100%);
+      padding: 30px;
+      text-align: center;
+      border-bottom: 3px solid #D4AF37;
+    }
+    .logo {
+      font-family: 'Georgia', serif;
+      font-size: 24px;
+      font-weight: bold;
+      color: #D4AF37;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    .tagline {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin: 5px 0 0 0;
+    }
+    .content {
+      padding: 40px 30px;
+      line-height: 1.6;
+    }
+    h1 {
+      font-family: 'Georgia', serif;
+      font-size: 20px;
+      color: #1c1917;
+      margin-top: 0;
+      margin-bottom: 18px;
+      font-weight: 700;
+    }
+    p {
+      font-size: 14px;
+      color: #44403c;
+      margin-bottom: 18px;
+    }
+    .highlight-card {
+      background-color: #FAF9F6;
+      border-left: 4px solid #D4AF37;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 25px 0;
+    }
+    .grid-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    .grid-table th, .grid-table td {
+      padding: 12px 15px;
+      text-align: left;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    }
+    .grid-table th {
+      color: #78716c;
+      font-weight: 600;
+      width: 40%;
+    }
+    .grid-table td {
+      color: #1c1917;
+      font-weight: 700;
+    }
+    .btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #c5a880 0%, #d4af37 100%);
+      color: #1c1917 !important;
+      text-decoration: none;
+      padding: 12px 30px;
+      font-weight: bold;
+      border-radius: 8px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 10px;
+      box-shadow: 0 4px 10px rgba(212, 175, 55, 0.15);
+      text-align: center;
+    }
+    .footer {
+      background-color: #faf9f6;
+      padding: 25px;
+      text-align: center;
+      font-size: 11px;
+      color: #78716c;
+      border-top: 1px solid rgba(212, 175, 55, 0.05);
+    }
+    .footer p {
+      margin: 5px 0;
+      font-size: 11px;
+      color: #78716c;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <div class="logo">Golden Celebrations</div>
+      <div class="tagline">Where Every Milestone Glimmers</div>
+    </div>
+    <div class="content">
+      
+      <h1>Password Reset Request</h1>
+      <p>We received a request to reset your password for the Golden Celebrations dashboard. If you didn't make this request, you can safely ignore this email.</p>
+      
+      <div class="highlight-card" style="text-align: center;">
+        <p>This secure reset link is valid for <strong>1 hour</strong> (expires at 01:22 am).</p>
+        <a href="http://localhost:4000/auth/reset-password?token=mock_reset_token_xyz" class="btn" style="color: #1c1917 !important;">Reset Password</a>
+      </div>
+
+      <p>Alternatively, copy and paste this URL into your browser:</p>
+      <p style="word-break: break-all; font-size: 12px; color: #78716c;">http://localhost:4000/auth/reset-password?token=mock_reset_token_xyz</p>
+    
+    </div>
+    <div class="footer">
+      <p><strong>The Golden Celebrations Lawn</strong></p>
+      <p>Golden Celebrations Lawn, Narsala Road, Near Hudkeshwar, Nagpur, MH - 440034</p>
+      <p>Phone: +91 9823464705 | Email: shalini.meshram@gmail.com</p>
+      <p>&copy; 2026 Golden Celebrations Lawn. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
 ========================================

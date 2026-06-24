@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Lock, Mail, AlertCircle, Sparkles } from 'lucide-react';
@@ -34,14 +35,19 @@ export default function AdminLogin() {
       return;
     }
 
+    if (!/\S+@\S+\.\S+/.test(email.trim())) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
     setIsSubmitting(true);
-    const success = await login(email.trim(), password);
+    const result = await login(email.trim(), password);
     setIsSubmitting(false);
 
-    if (success) {
+    if (result.success) {
       router.push('/admin');
     } else {
-      setError('Invalid email or password.');
+      setError(result.error || 'Invalid email or password.');
     }
   };
 
@@ -74,17 +80,6 @@ export default function AdminLogin() {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex items-start gap-2 text-xs text-red-500 bg-red-500/5 p-3.5 rounded-xl border border-red-500/10"
-            >
-              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-              <span>{error}</span>
-            </motion.div>
-          )}
-
           {/* Email */}
           <div>
             <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/70 mb-1.5">
@@ -98,7 +93,7 @@ export default function AdminLogin() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="owner@goldencelebration.com"
+                placeholder="admin@goldencelebration.com"
                 className="w-full rounded-xl border border-gold-400/15 bg-ivory-50/50 dark:bg-zinc-900 pl-10 pr-4 py-3 text-xs text-foreground outline-none focus:border-gold-400 focus:bg-white dark:focus:bg-zinc-950 transition-all"
                 required
               />
@@ -107,9 +102,17 @@ export default function AdminLogin() {
 
           {/* Password */}
           <div>
-            <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/70 mb-1.5">
-              Password
-            </label>
+            <div className="flex justify-between items-center mb-1.5">
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/70">
+                Password
+              </label>
+              <Link 
+                href="/auth/forgot-password?from=admin" 
+                className="text-[10px] font-bold uppercase tracking-widest text-gold-600 hover:text-gold-500 transition-colors animate-pulse-slow"
+              >
+                Forgot?
+              </Link>
+            </div>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-foreground/45">
                 <Lock className="h-4 w-4" />
@@ -125,22 +128,17 @@ export default function AdminLogin() {
             </div>
           </div>
 
-          {/* Helpful Credentials Guideline */}
-          <div className="text-[10px] leading-relaxed text-foreground/50 bg-gold-400/5 p-3.5 rounded-xl border border-gold-400/10 space-y-1">
-            <span className="font-bold block text-foreground">Available Accounts:</span>
-            <div className="flex justify-between">
-              <span>Owner: <code className="text-gold-500 font-bold">owner@goldencelebration.com</code></span>
-              <code className="text-foreground/70 font-semibold">owner123</code>
-            </div>
-            <div className="flex justify-between">
-              <span>Manager: <code className="text-gold-500 font-bold">manager@goldencelebration.com</code></span>
-              <code className="text-foreground/70 font-semibold">manager123</code>
-            </div>
-            <div className="flex justify-between">
-              <span>Staff: <code className="text-gold-500 font-bold">staff@goldencelebration.com</code></span>
-              <code className="text-foreground/70 font-semibold">staff123</code>
-            </div>
-          </div>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-start gap-2 text-xs text-red-500 bg-red-500/5 p-3.5 rounded-xl border border-red-500/10"
+            >
+              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+              <span>{error}</span>
+            </motion.div>
+          )}
+
 
           {/* Submit */}
           <button
@@ -148,7 +146,14 @@ export default function AdminLogin() {
             disabled={isSubmitting || isLoading}
             className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-gold-600 to-gold-400 py-3.5 font-sans text-xs font-bold tracking-widest text-zinc-950 uppercase shadow-lg shadow-gold-600/10 hover:from-gold-500 hover:to-gold-300 transition-all disabled:opacity-50 cursor-pointer"
           >
-            {isSubmitting ? 'Authenticating...' : 'Sign In'}
+            {isSubmitting ? (
+              <div className="flex items-center gap-2">
+                <div className="h-4 w-4 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin" />
+                <span>Authenticating...</span>
+              </div>
+            ) : (
+              <span>Sign In</span>
+            )}
           </button>
         </form>
       </motion.div>
