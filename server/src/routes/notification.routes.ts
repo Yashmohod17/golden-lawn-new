@@ -4,8 +4,8 @@ import { authenticateToken, requireRole } from '../middleware/auth.middleware';
 
 const router = Router();
 
-// Secure all notification endpoints with JWT authentication
-router.use(authenticateToken);
+// Secure notification endpoints with JWT authentication
+router.use('/notifications', authenticateToken);
 
 // User-specific endpoints (accessible by CUSTOMER, STAFF, MANAGER, OWNER)
 router.get('/notifications', NotificationController.getNotifications);

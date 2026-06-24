@@ -180,6 +180,10 @@ async function main() {
   console.log('Clearing database tables...');
   await prisma.package.deleteMany({});
   await prisma.testimonial.deleteMany({});
+  await prisma.service.deleteMany({});
+  await prisma.fAQ.deleteMany({});
+  await prisma.galleryItem.deleteMany({});
+  await prisma.websiteSetting.deleteMany({});
   await prisma.notificationLog.deleteMany({});
   await prisma.notificationTemplate.deleteMany({});
   await prisma.notificationPreference.deleteMany({});
@@ -596,6 +600,8 @@ async function main() {
         rating: 5,
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop',
         text: 'Our wedding at The Golden Celebrations Lawn was nothing short of a fairytale. The lighting decoration at night made the entire lawn look like a starry sky. Our guests were mesmerized, and the catering support was absolutely flawless. Thank you for making our day so special!',
+        isActive: true,
+        order: 0,
       },
       {
         name: 'Karan Malhotra',
@@ -603,6 +609,8 @@ async function main() {
         rating: 5,
         avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150&auto=format&fit=crop',
         text: 'We hosted our company’s 10th-anniversary celebration here with over 800 guests. The professional event management team handled everything seamlessly. The space is vast, parking was extremely well managed, and the stage setup was incredibly grand. Highly recommended!',
+        isActive: true,
+        order: 1,
       },
       {
         name: 'Priyanka Sen',
@@ -610,7 +618,272 @@ async function main() {
         rating: 5,
         avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop',
         text: 'The floral design and stage decorations for our engagement ceremony were breathtaking. The booking process was very smooth, and the team accommodated all our customization requests. It felt extremely premium and intimate at the same time.',
+        isActive: true,
+        order: 2,
       },
+    ]
+  });
+
+  console.log('Seeding Services...');
+  await prisma.service.createMany({
+    data: [
+      {
+        title: 'Wedding Planning',
+        desc: 'End-to-end wedding theme design, vendor alignment, rehearsal schedule management, and detailed execution planning.',
+        image: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=400&auto=format&fit=crop',
+        iconName: 'Sparkles',
+        isActive: true,
+        order: 0,
+      },
+      {
+        title: 'Reception Arrangements',
+        desc: 'Grand seating plans, customized reception stage backdrop layouts, entry pathways, and customized guest lounge zones.',
+        image: 'https://images.unsplash.com/photo-1505232458729-565772b74dd7?q=80&w=400&auto=format&fit=crop',
+        iconName: 'GlassWater',
+        isActive: true,
+        order: 1,
+      },
+      {
+        title: 'Engagement Ceremonies',
+        desc: 'Sophisticated ring ceremony setups with elegant audio-visual structures, rose arches, and cozy guest sitting blocks.',
+        image: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=400&auto=format&fit=crop',
+        iconName: 'Heart',
+        isActive: true,
+        order: 2,
+      },
+      {
+        title: 'Birthday Celebrations',
+        desc: 'Fun-filled birthday sets, customized cake display tables, interactive photo backdrops, and child activity zones.',
+        image: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=400&auto=format&fit=crop',
+        iconName: 'Gift',
+        isActive: true,
+        order: 3,
+      },
+      {
+        title: 'Anniversary Functions',
+        desc: 'Milestone anniversary setups emphasizing couple themes, romantic low lights, and elegant stage designs.',
+        image: 'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?q=80&w=400&auto=format&fit=crop',
+        iconName: 'Crown',
+        isActive: true,
+        order: 4,
+      },
+      {
+        title: 'Corporate Events',
+        desc: 'Professional stage arrangements for company gala dinners, launches, and audio-visually equipped press conferences.',
+        image: 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=400&auto=format&fit=crop',
+        iconName: 'Briefcase',
+        isActive: true,
+        order: 5,
+      },
+      {
+        title: 'Catering Services',
+        desc: 'Signature multi-cuisine culinary menus with customized appetizer live counters and sweet arrays.',
+        image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=400&auto=format&fit=crop',
+        iconName: 'Utensils',
+        isActive: true,
+        order: 6,
+      },
+      {
+        title: 'Stage Decoration',
+        desc: 'Breathtaking designer backdrop layouts, royal seating setups, led mapping frames, and custom pillars.',
+        image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=600&auto=format&fit=crop',
+        iconName: 'Paintbrush',
+        isActive: true,
+        order: 7,
+      },
+      {
+        title: 'Floral Decoration',
+        desc: 'Imported fresh flowers installations, path arches, dinner table vases, and hanging floral ceilings.',
+        image: 'https://images.unsplash.com/photo-1526047932273-341f2a7631f9?q=80&w=400&auto=format&fit=crop',
+        iconName: 'Flower',
+        isActive: true,
+        order: 8,
+      },
+      {
+        title: 'DJ and Sound System',
+        desc: 'High-definition sound output, professional DJs, dynamic track lists, and stage smoke controllers.',
+        image: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=400&auto=format&fit=crop',
+        iconName: 'Disc',
+        isActive: true,
+        order: 9,
+      },
+      {
+        title: 'Photography & Video',
+        desc: 'Candid pre-wedding photoshoots, drone highlight reels, cinematic editing, and online albums.',
+        image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=400&auto=format&fit=crop',
+        iconName: 'Camera',
+        isActive: true,
+        order: 10,
+      },
+      {
+        title: 'Guest Management',
+        desc: 'Valet parking management, custom guest greetings, registration desks, and private luxury suite allocations.',
+        image: 'https://images.unsplash.com/photo-1543807535-eceef0bc6599?q=80&w=400&auto=format&fit=crop',
+        iconName: 'Users',
+        isActive: true,
+        order: 11,
+      },
+      {
+        title: 'Luxury Lighting Setup',
+        desc: 'Fairy lights, glowing spotlights, customized stage mapping, and warm table ambient fixtures.',
+        image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop',
+        iconName: 'Lightbulb',
+        isActive: true,
+        order: 12,
+      },
+      {
+        title: 'Event Coordination',
+        desc: 'On-site coordinators managing schedule timelines, food timings, and tech control stations.',
+        image: 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=400&auto=format&fit=crop',
+        iconName: 'CalendarRange',
+        isActive: true,
+        order: 13,
+      },
+    ]
+  });
+
+  console.log('Seeding FAQs...');
+  await prisma.fAQ.createMany({
+    data: [
+      {
+        question: 'How do I book the venue for an event?',
+        answer: 'Booking is simple: Select an available date on our Calendar Checker or submit an Inquiry Form. A coordinator will lock the date temporarily and call you to arrange a site visit. A 25% advance payment is required to confirm the booking officially.',
+        category: 'Booking',
+        isActive: true,
+        order: 0,
+      },
+      {
+        question: 'What is the venue guest capacity?',
+        answer: 'The Golden Celebrations Lawn can accommodate up to 2,000 guests for open-air lawn events. For smaller, intimate celebrations, we can structure partition layouts to fit 150-300 guests comfortably.',
+        category: 'Logistics',
+        isActive: true,
+        order: 1,
+      },
+      {
+        question: 'Is parking available on site?',
+        answer: 'Yes! We have an adjacent private parking area that fits over 300 vehicles securely. We also provide professional valet assistance for all major weddings and corporate functions at no extra cost.',
+        category: 'Logistics',
+        isActive: true,
+        order: 2,
+      },
+      {
+        question: 'Do you provide in-house catering, or can we bring our own chef?',
+        answer: 'We offer premium, multi-cuisine catering packages. However, you are welcome to hire external, government-approved catering teams. Access to our fully equipped base kitchen is provided.',
+        category: 'Catering',
+        isActive: true,
+        order: 3,
+      },
+      {
+        question: 'Can we customize decorations?',
+        answer: 'Absolutely! Our in-house decor designers work with you to customize themes, floral structures, lighting systems, and stage layouts. If you prefer, we also allow pre-approved external decorators.',
+        category: 'Decoration',
+        isActive: true,
+        order: 4,
+      },
+      {
+        question: 'What are the event slot timings?',
+        answer: 'Our default time slots are Morning (7:00 AM - 3:00 PM) and Evening (6:00 PM - 2:00 AM). Extended timing options can be scheduled upon coordinator review.',
+        category: 'Timings',
+        isActive: true,
+        order: 5,
+      },
+      {
+        question: 'What is the cancellation and rescheduling policy?',
+        answer: 'Cancellations made 90 days prior to the event are eligible for a 50% refund of the advance deposit. Deposits are fully transferable to any available date within the same calendar year if requested 30 days prior.',
+        category: 'Cancellation',
+        isActive: true,
+        order: 6,
+      },
+    ]
+  });
+
+  console.log('Seeding Gallery Items...');
+  await prisma.galleryItem.createMany({
+    data: [
+      {
+        category: 'Weddings',
+        title: 'Fairytale Flower Arch Ceremony',
+        image: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop',
+        aspect: 'aspect-[4/5]',
+        isActive: true,
+        order: 0,
+      },
+      {
+        category: 'Night View',
+        title: 'Lawn Lighting Illuminations',
+        image: 'https://images.unsplash.com/photo-1469371670807-013ccf25f16a?q=80&w=600&auto=format&fit=crop',
+        aspect: 'aspect-video',
+        isActive: true,
+        order: 1,
+      },
+      {
+        category: 'Decorations',
+        title: 'Golden Table Dinner Setup',
+        image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=600&auto=format&fit=crop',
+        aspect: 'aspect-square',
+        isActive: true,
+        order: 2,
+      },
+      {
+        category: 'Receptions',
+        title: 'Canopy Glow Lounge Zone',
+        image: 'https://images.unsplash.com/photo-1505232458729-565772b74dd7?q=80&w=600&auto=format&fit=crop',
+        aspect: 'aspect-[3/4]',
+        isActive: true,
+        order: 3,
+      },
+      {
+        category: 'Stage Designs',
+        title: 'Bespoke Floral Royal Stage',
+        image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=600&auto=format&fit=crop',
+        aspect: 'aspect-[4/3]',
+        isActive: true,
+        order: 4,
+      },
+      {
+        category: 'Engagements',
+        title: 'Classy Ring Exchanging Stage',
+        image: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=600&auto=format&fit=crop',
+        aspect: 'aspect-[4/5]',
+        isActive: true,
+        order: 5,
+      },
+      {
+        category: 'Birthdays',
+        title: 'Vibrant Theme Balloon Backdrop',
+        image: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=600&auto=format&fit=crop',
+        aspect: 'aspect-square',
+        isActive: true,
+        order: 6,
+      },
+      {
+        category: 'Corporate Events',
+        title: 'Annual Awards Gala Dining Room',
+        image: 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=600&auto=format&fit=crop',
+        aspect: 'aspect-video',
+        isActive: true,
+        order: 7,
+      },
+      {
+        category: 'Weddings',
+        title: 'Ivory Walkway Petals Alignment',
+        image: 'https://images.unsplash.com/photo-1519225495810-7512c696505a?q=80&w=600&auto=format&fit=crop',
+        aspect: 'aspect-square',
+        isActive: true,
+        order: 8,
+      },
+    ]
+  });
+
+  console.log('Seeding Website Settings...');
+  await prisma.websiteSetting.createMany({
+    data: [
+      { key: 'silverMultiplier', value: '1.0', description: 'Price multiplier for the Silver package' },
+      { key: 'goldMultiplier', value: '1.2', description: 'Price multiplier for the Gold package' },
+      { key: 'platinumMultiplier', value: '1.55', description: 'Price multiplier for the Platinum package' },
+      { key: 'maxCapacity', value: '1500', description: 'Maximum guest capacity of the lawn venue' },
+      { key: 'valetSpaces', value: '250', description: 'Available valet parking spots' },
+      { key: 'cancellationGraceDays', value: '15', description: 'Refund grace window period in days' },
     ]
   });
 
@@ -625,3 +898,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+

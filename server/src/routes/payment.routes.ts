@@ -6,8 +6,11 @@ import prisma from '../config/database';
 
 const router = Router();
 
-// Enforce token authentication on all payment routes
-router.use(authenticateToken);
+// Enforce token authentication on specific payment/invoice routes
+router.use('/payments', authenticateToken);
+router.use('/invoices', authenticateToken);
+router.use('/invoice', authenticateToken);
+router.use('/payment-analytics', authenticateToken);
 
 // 1. Create order
 router.post('/payments/create-order', paymentController.createOrder);

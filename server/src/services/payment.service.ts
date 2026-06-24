@@ -500,9 +500,9 @@ export class PaymentService {
 
     if (search) {
       whereClause.OR = [
-        { id: { contains: search } },
-        { transactionId: { contains: search } },
-        { booking: { name: { contains: search } } }
+        { id: { contains: search, mode: 'insensitive' } },
+        { transactionId: { contains: search, mode: 'insensitive' } },
+        { booking: { name: { contains: search, mode: 'insensitive' } } }
       ];
     }
 

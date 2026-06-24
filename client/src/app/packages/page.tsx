@@ -4,67 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Check, X, Shield, Sparkles, Star } from 'lucide-react';
 import { useInquiry } from '../../lib/InquiryContext';
-
-const packages = [
-  {
-    name: 'Silver Package',
-    badge: 'Standard Selection',
-    desc: 'Perfect for intimate celebrations, small gatherings, and simple family gatherings.',
-    price: '₹1,200',
-    color: 'border-zinc-300 dark:border-zinc-700 bg-zinc-400/5',
-    accent: 'bg-zinc-400 text-zinc-950',
-    features: [
-      { name: 'Basic Flower & Light Decor', included: true },
-      { name: 'Full Lawn Access (8 hrs)', included: true },
-      { name: 'Standard Seating Setup', included: true },
-      { name: 'Standard Sound System', included: true },
-      { name: 'Catering Kitchen Access', included: true },
-      { name: 'Dedicated Stage Setup', included: false },
-      { name: 'Photography & Video', included: false },
-      { name: 'Complete Event Planning', included: false },
-      { name: 'VIP Guest Assistance & Valet', included: false },
-    ],
-  },
-  {
-    name: 'Gold Package',
-    badge: 'Most Popular',
-    desc: 'Tailored for elegant evening receptions, engagements, and corporate banquets.',
-    price: '₹2,500',
-    color: 'border-gold-400/40 bg-gold-400/5',
-    accent: 'bg-gold-400 text-zinc-950',
-    popular: true,
-    features: [
-      { name: 'Premium Flower & Light Decor', included: true },
-      { name: 'Full Lawn Access (12 hrs)', included: true },
-      { name: 'Designer Seating Setup', included: true },
-      { name: 'High-definition Sound System', included: true },
-      { name: 'In-house Catering Support', included: true },
-      { name: 'Custom Stage Decoration', included: true },
-      { name: 'Candid Photography Support', included: true },
-      { name: 'Complete Event Planning', included: false },
-      { name: 'VIP Guest Assistance & Valet', included: false },
-    ],
-  },
-  {
-    name: 'Platinum Package',
-    badge: 'Luxury Unlimited',
-    desc: 'Our flagship wedding experience, handling every detail to majestic gold standards.',
-    price: '₹4,500',
-    color: 'border-burgundy-500/35 bg-burgundy-600/5',
-    accent: 'bg-burgundy-600 text-white',
-    features: [
-      { name: 'Luxury Flower & Light Decor', included: true },
-      { name: 'Full Lawn Access (24 hrs)', included: true },
-      { name: 'Royal Seating Arrangements', included: true },
-      { name: 'Concert Sound System & DJ', included: true },
-      { name: 'Premium Multi-cuisine Catering', included: true },
-      { name: 'Bespoke Stage Artistry', included: true },
-      { name: 'Drone & Candid Photo/Video', included: true },
-      { name: 'Complete Event Management', included: true },
-      { name: 'VIP Valet & Guest Support Suite', included: true },
-    ],
-  },
-];
+import { cmsService } from '../../services/cms';
 
 const comparisonMatrix = [
   { feature: 'Lawn Access Hours', silver: '8 Hours', gold: '12 Hours', platinum: '24 Hours' },
@@ -94,15 +34,25 @@ interface PackageItem {
 
 export default function Packages() {
   const { openInquiry } = useInquiry();
-  const [items, setItems] = useState<PackageItem[]>(packages);
+  const [items, setItems] = useState<PackageItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedPkgs = localStorage.getItem('gc_packages');
-      if (savedPkgs) {
-        setItems(JSON.parse(savedPkgs));
-      }
-    }
+    cmsService.getPackages()
+      .then(data => {
+        setItems(data.map(p => ({
+          ...p,
+          price: p.price,
+          color: p.color || 'border-zinc-300 dark:border-zinc-700 bg-zinc-400/5',
+          accent: p.accent || 'bg-zinc-400 text-zinc-950',
+          popular: p.badge.toLowerCase().includes('popular') || p.name.toLowerCase().includes('gold'),
+        })));
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to fetch packages:', err);
+        setLoading(false);
+      });
   }, []);
 
   return (

@@ -1,5 +1,5 @@
 import prisma from '../config/database';
-import { BookingInput } from '../validations/booking.validation';
+import { BookingInput, BookingUpdateInput } from '../validations/booking.validation';
 
 export class BookingRepository {
   async getAll() {
@@ -26,6 +26,10 @@ export class BookingRepository {
 
   async create(data: BookingInput) {
     const defaultLocation = 'Grand Main Lawn A & B';
+    const checkTodayStr = new Date().toISOString().split('T')[0];
+    if (data.date < checkTodayStr) {
+      throw new Error('Cannot book dates in the past.');
+    }
     // Check duplicate
     await this.checkDuplicate(data.date, defaultLocation);
 
@@ -102,7 +106,7 @@ export class BookingRepository {
     });
   }
 
-  async update(id: string, data: Partial<BookingInput & { location: string; coordinatorName: string; coordinatorPhone: string; status: string; paid: number; pending: number; milestones?: any[] }>, changedBy = 'COORDINATOR') {
+  async update(id: string, data: BookingUpdateInput, changedBy = 'COORDINATOR') {
     const existing = await prisma.booking.findUnique({
       where: { id },
     });
@@ -114,6 +118,10 @@ export class BookingRepository {
     const todayStr = new Date().toISOString().split('T')[0];
     if (existing.date < todayStr) {
       throw new Error('Past bookings cannot be updated or cancelled.');
+    }
+
+    if (data.date !== undefined && data.date < todayStr) {
+      throw new Error('Cannot move booking to a date in the past.');
     }
 
     // Downgrade prevention checks

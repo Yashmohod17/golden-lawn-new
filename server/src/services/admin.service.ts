@@ -96,9 +96,9 @@ export class AdminService {
     const where: any = {};
     if (search) {
       where.OR = [
-        { name: { contains: search } },
-        { email: { contains: search } },
-        { phone: { contains: search } },
+        { name: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } },
+        { phone: { contains: search, mode: 'insensitive' } },
       ];
     }
     if (filter === 'ACTIVE') {
@@ -273,9 +273,9 @@ export class AdminService {
     const where: any = {};
     if (search) {
       where.OR = [
-        { id: { contains: search } },
-        { bookingId: { contains: search } },
-        { method: { contains: search } },
+        { id: { contains: search, mode: 'insensitive' } },
+        { bookingId: { contains: search, mode: 'insensitive' } },
+        { method: { contains: search, mode: 'insensitive' } },
       ];
     }
     return prisma.payment.findMany({
@@ -296,8 +296,8 @@ export class AdminService {
     const where: any = {};
     if (search) {
       where.OR = [
-        { invoiceNo: { contains: search } },
-        { bookingId: { contains: search } },
+        { invoiceNo: { contains: search, mode: 'insensitive' } },
+        { bookingId: { contains: search, mode: 'insensitive' } },
       ];
     }
     return prisma.invoice.findMany({

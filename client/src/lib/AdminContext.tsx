@@ -27,8 +27,17 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     
     const token = localStorage.getItem('admin_access_token');
     const savedUser = localStorage.getItem('admin_user');
+    const lastActivity = localStorage.getItem('admin_last_activity');
     
     if (token && savedUser) {
+      if (lastActivity) {
+        const elapsed = Date.now() - Number(lastActivity);
+        if (elapsed > 15 * 60 * 1000) {
+          clearSession();
+          setIsLoading(false);
+          return;
+        }
+      }
       try {
         const parsedUser = JSON.parse(savedUser) as AdminUser;
         setAdminUser(parsedUser);
@@ -44,6 +53,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const clearSession = () => {
     localStorage.removeItem('admin_access_token');
     localStorage.removeItem('admin_user');
+    localStorage.removeItem('admin_last_activity');
     setAdminUser(null);
     setIsAuthenticated(false);
   };
@@ -61,6 +71,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         if (typeof window !== 'undefined') {
           localStorage.setItem('admin_access_token', data.accessToken);
           localStorage.setItem('admin_user', JSON.stringify(data.user));
+          localStorage.setItem('admin_last_activity', Date.now().toString());
         }
         setAdminUser(data.user);
         setIsAuthenticated(true);
@@ -88,7 +99,16 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     let timeoutId: NodeJS.Timeout;
     const INACTIVITY_TIMEOUT = 15 * 60 * 1000; // 15 minutes in ms
 
+    let lastWriteTime = 0;
     const resetTimer = () => {
+      const now = Date.now();
+      if (now - lastWriteTime > 5000) {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('admin_last_activity', now.toString());
+        }
+        lastWriteTime = now;
+      }
+      
       if (timeoutId) clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
         console.log('Admin console inactivity timeout reached. Logging out...');

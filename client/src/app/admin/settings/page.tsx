@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Settings, Award, MapPin, Shield, Save, RefreshCw, 
   AlertCircle, CheckCircle, Sparkles, Sliders 
 } from 'lucide-react';
+
+import { cmsService } from '../../../services/cms';
 
 export default function SettingsPage() {
   // Package pricing parameters
@@ -22,15 +24,40 @@ export default function SettingsPage() {
   const [success, setSuccess] = useState('');
   const [updating, setUpdating] = useState(false);
 
-  const handleSave = (e: React.FormEvent) => {
+  useEffect(() => {
+    cmsService.getSettings()
+      .then(data => {
+        if (data.silverMultiplier) setSilverMultiplier(parseFloat(data.silverMultiplier));
+        if (data.goldMultiplier) setGoldMultiplier(parseFloat(data.goldMultiplier));
+        if (data.platinumMultiplier) setPlatinumMultiplier(parseFloat(data.platinumMultiplier));
+        if (data.maxCapacity) setMaxCapacity(parseInt(data.maxCapacity));
+        if (data.valetSpaces) setValetSpaces(parseInt(data.valetSpaces));
+        if (data.cancellationGraceDays) setCancellationGraceDays(parseInt(data.cancellationGraceDays));
+      })
+      .catch(err => console.error('Failed to load settings:', err));
+  }, []);
+
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setUpdating(true);
     setSuccess('');
     
-    setTimeout(() => {
+    try {
+      await cmsService.updateWebsiteSettings({
+        silverMultiplier: String(silverMultiplier),
+        goldMultiplier: String(goldMultiplier),
+        platinumMultiplier: String(platinumMultiplier),
+        maxCapacity: String(maxCapacity),
+        valetSpaces: String(valetSpaces),
+        cancellationGraceDays: String(cancellationGraceDays),
+      });
+      setSuccess('Venue configurations and package pricing variables successfully applied to database.');
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message || 'Failed to save settings.');
+    } finally {
       setUpdating(false);
-      setSuccess('Venue configurations and package pricing variables successfully applied to system core schema.');
-    }, 1000);
+    }
   };
 
   // RBAC Visualizer Data
