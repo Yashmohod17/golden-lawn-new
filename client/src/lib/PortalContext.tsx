@@ -72,7 +72,7 @@ interface PortalContextType {
   notifications: PortalNotification[];
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (username: string, password: string) => Promise<boolean>;
+  login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   updateProfile: (updatedUser: Partial<PortalUser>) => void;
   cancelBooking: (bookingId: string) => void;
@@ -283,7 +283,7 @@ export function PortalProvider({ children }: { children: ReactNode }) {
     };
   }, [isAuthenticated]);
 
-  const login = async (username: string, password: string): Promise<boolean> => {
+  const login = async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
       const normalizedUser = username.trim().toLowerCase();
       const email = normalizedUser === 'rajesh' ? 'rajesh.kumar@gmail.com' : normalizedUser;
@@ -297,7 +297,12 @@ export function PortalProvider({ children }: { children: ReactNode }) {
       });
 
       if (!res.ok) {
-        return false;
+        let errorMsg = 'Invalid email/username or password.';
+        try {
+          const data = await res.json();
+          errorMsg = data.error || errorMsg;
+        } catch (_) {}
+        return { success: false, error: errorMsg };
       }
 
       const data = await res.json();
@@ -312,12 +317,12 @@ export function PortalProvider({ children }: { children: ReactNode }) {
         setIsLoading(true);
         await fetchPortalData(data.user.id);
         setIsLoading(false);
-        return true;
+        return { success: true };
       }
-      return false;
+      return { success: false, error: 'Invalid authentication payload received.' };
     } catch (err) {
-      console.error('Login error:', err);
-      return false;
+      console.warn('Customer login error:', err);
+      return { success: false, error: 'A network error occurred. Please try again.' };
     }
   };
 
@@ -604,7 +609,7 @@ const defaultContextValue: PortalContextType = {
   notifications: [],
   isAuthenticated: false,
   isLoading: false,
-  login: async () => false,
+  login: async () => ({ success: false, error: 'Not inside provider' }),
   logout: () => {},
   updateProfile: () => {},
   cancelBooking: () => {},

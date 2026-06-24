@@ -187,7 +187,7 @@ export default function AuthRegister() {
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="e.g. +91 98765 43210"
+              placeholder="e.g. +91 9823464705"
               disabled={isLoading}
               className="w-full rounded-xl border border-gold-400/15 bg-ivory-50/50 dark:bg-zinc-900/50 pl-10 pr-4 py-2.5 text-xs text-foreground outline-none focus:border-gold-400 focus:bg-white dark:focus:bg-zinc-950 transition-all disabled:opacity-50"
             />

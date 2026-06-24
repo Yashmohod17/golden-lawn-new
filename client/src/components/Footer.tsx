@@ -109,7 +109,7 @@ export function Footer() {
               <li className="flex items-center gap-3">
                 <Phone className="h-5 w-5 text-gold-400 shrink-0" />
                 <span className="text-foreground/75 dark:text-foreground/80">
-                  +91 98765 43210
+                  +91 9823464705
                 </span>
               </li>
               <li className="flex items-center gap-3">

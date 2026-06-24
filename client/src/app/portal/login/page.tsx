@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Lock, User, AlertCircle, Sparkles, LogIn } from 'lucide-react';
@@ -31,21 +32,20 @@ export default function CustomerLogin() {
       return;
     }
 
-    setIsSubmitting(true);
-    const success = await login(username, password);
+    if (username.includes('@') && !/\S+@\S+\.\S+/.test(username.trim())) {
+      setError('Please provide a valid email format.');
+      return;
+    }
 
-    if (success) {
+    setIsSubmitting(true);
+    const result = await login(username.trim(), password);
+
+    if (result.success) {
       router.push('/portal');
     } else {
-      setError('Invalid email/username or password. Hint: Use the demo autofill.');
+      setError(result.error || 'Invalid email/username or password.');
       setIsSubmitting(false);
     }
-  };
-
-  const handleAutofill = () => {
-    setUsername('rajesh.kumar@gmail.com');
-    setPassword('customer123');
-    setError('');
   };
 
   if (isLoading) {
@@ -117,9 +117,17 @@ export default function CustomerLogin() {
 
           {/* Password */}
           <div>
-            <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/70 mb-1.5">
-              Password
-            </label>
+            <div className="flex justify-between items-center mb-1.5">
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/70">
+                Password
+              </label>
+              <Link 
+                href="/auth/forgot-password?from=portal" 
+                className="text-[10px] font-bold uppercase tracking-widest text-gold-600 hover:text-gold-500 transition-colors animate-pulse-slow"
+              >
+                Forgot?
+              </Link>
+            </div>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-foreground/45">
                 <Lock className="h-4 w-4" />
@@ -134,23 +142,6 @@ export default function CustomerLogin() {
             </div>
           </div>
 
-          {/* Helper details box */}
-          <div className="flex flex-col gap-2 text-[11px] leading-relaxed text-foreground/60 bg-gold-400/5 p-4 rounded-xl border border-gold-400/10">
-            <div className="flex items-center gap-1.5 font-semibold text-gold-600 dark:text-gold-400">
-              <Sparkles className="h-3 w-3" />
-              <span>Testing Credentials</span>
-            </div>
-            <p>Username: <code className="text-foreground font-bold">rajesh</code> or <code className="text-foreground font-bold">rajesh.kumar@gmail.com</code></p>
-            <p>Password: <code className="text-foreground font-bold">customer123</code></p>
-            
-            <button
-              type="button"
-              onClick={handleAutofill}
-              className="mt-1 self-start font-sans text-[10px] font-bold uppercase tracking-widest text-gold-600 hover:text-gold-500 underline underline-offset-2 transition-colors cursor-pointer"
-            >
-              Demo Autofill
-            </button>
-          </div>
 
           {/* Submit */}
           <button
@@ -158,7 +149,14 @@ export default function CustomerLogin() {
             disabled={isSubmitting}
             className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-gold-600 to-gold-400 py-4 font-sans text-xs font-bold tracking-widest text-zinc-950 uppercase shadow-lg shadow-gold-600/10 hover:from-gold-500 hover:to-gold-300 transition-all disabled:opacity-50 cursor-pointer"
           >
-            {isSubmitting ? 'Verifying...' : 'Access Portal'}
+            {isSubmitting ? (
+              <div className="flex items-center gap-2">
+                <div className="h-4 w-4 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin" />
+                <span>Verifying...</span>
+              </div>
+            ) : (
+              <span>Access Portal</span>
+            )}
           </button>
         </form>
       </motion.div>

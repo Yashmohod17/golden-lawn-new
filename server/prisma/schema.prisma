@@ -1,5 +1,5 @@
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -99,8 +99,8 @@ model Booking {
   notes            String?
   status           String                 @default("TEMP_RESERVED")
   location         String                 @default("Grand Main Lawn A & B")
-  coordinatorName  String                 @default("Aravind Sharma")
-  coordinatorPhone String                 @default("+91 98877 66554")
+  coordinatorName  String                 @default("Shalini Meshram")
+  coordinatorPhone String                 @default("+91 9823464705")
   reservedAt       DateTime?              @default(now())
   expiresAt        DateTime?
   createdAt        DateTime               @default(now())
@@ -436,4 +436,13 @@ model WebsiteSetting {
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  email     String   
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
 }

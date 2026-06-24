@@ -8,7 +8,7 @@ interface AdminContextType {
   adminUser: AdminUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   hasPermission: (permission: string) => boolean;
   refreshAdminSession: () => Promise<void>;
@@ -62,9 +62,8 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     loadSession();
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
-      setIsLoading(true);
       const data = await adminService.login(email, password);
       
       if (data && data.accessToken && data.user) {
@@ -75,15 +74,12 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         }
         setAdminUser(data.user);
         setIsAuthenticated(true);
-        setIsLoading(false);
-        return true;
+        return { success: true };
       }
-      setIsLoading(false);
-      return false;
-    } catch (err) {
-      console.error('Admin login error:', err);
-      setIsLoading(false);
-      return false;
+      return { success: false, error: data.error || 'Invalid email or password.' };
+    } catch (err: any) {
+      console.warn('Admin login error:', err);
+      return { success: false, error: err.message || 'Invalid email or password.' };
     }
   };
 

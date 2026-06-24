@@ -544,7 +544,7 @@ export function InquiryModal() {
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="e.g. +91 98765 43210"
+                placeholder="e.g. +91 9823464705"
                 className={`w-full rounded-xl border bg-ivory-50 px-4 py-2.5 text-xs text-foreground outline-none focus:border-gold-400 dark:bg-zinc-900 ${
                   errors.phone ? 'border-red-500' : 'border-gold-400/15'
                 }`}

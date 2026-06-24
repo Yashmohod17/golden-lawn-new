@@ -1,6 +1,7 @@
 import prisma from '../config/database';
 import crypto from 'crypto';
 import { NotificationService } from './notification.service';
+import { EmailService } from './email.service';
 
 // Basic configuration for Razorpay
 const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || '';
@@ -310,6 +311,16 @@ export class PaymentService {
         console.error('Failed to dispatch payment notification:', err);
       }
     }
+
+    // Asynchronously send payment receipt (Phase 6)
+    EmailService.sendPaymentReceipt(booking.email, {
+      customerName: booking.name,
+      bookingId: booking.id,
+      transactionId: razorpay_payment_id,
+      amount: amountPaid,
+      remainingBalance: newPending,
+      paymentDate: new Date().toLocaleDateString()
+    }).catch(err => console.error('Failed to send payment receipt email:', err));
 
     return updatedBooking;
   }

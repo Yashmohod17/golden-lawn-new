@@ -2,6 +2,7 @@ import { bookingRepository } from '../repositories/booking.repository';
 import { BookingInput } from '../validations/booking.validation';
 import { NotificationService } from './notification.service';
 import prisma from '../config/database';
+import { EmailService } from './email.service';
 
 export class BookingService {
   async getBookings() {
@@ -10,6 +11,26 @@ export class BookingService {
 
   async createBooking(data: BookingInput) {
     const booking = await bookingRepository.create(data);
+
+    // Asynchronously send contact form acknowledgements (Phase 4)
+    EmailService.sendInquiryAcknowledgement(booking.email, {
+      customerName: booking.name,
+      eventType: booking.eventType,
+      eventDate: booking.date,
+      guests: booking.guests,
+      notes: booking.notes || undefined
+    }).catch(err => console.error('Failed to send customer inquiry acknowledgement email:', err));
+
+    EmailService.sendOwnerInquiryNotification({
+      customerName: booking.name,
+      customerEmail: booking.email,
+      customerPhone: booking.phone,
+      eventType: booking.eventType,
+      eventDate: booking.date,
+      guests: booking.guests,
+      notes: booking.notes || undefined
+    }).catch(err => console.error('Failed to send owner inquiry email:', err));
+
     if (booking.customerId) {
       try {
         await NotificationService.sendNotification({
@@ -49,6 +70,16 @@ export class BookingService {
             type: 'success'
           });
         } else if (data.status === 'CANCELLED') {
+          EmailService.sendBookingCancellation(booking.email, {
+            customerName: booking.name,
+            bookingId: booking.id,
+            eventDate: booking.date,
+            eventType: booking.eventType,
+            refundInfo: booking.paid > 0 
+              ? `Processed cancellation for booking with ₹${booking.paid.toLocaleString()} paid. Refund is subject to cancellation terms.` 
+              : 'No deposit was paid. No refund is due.'
+          }).catch(err => console.error('Failed to send booking cancellation email:', err));
+
           await NotificationService.sendNotification({
             customerId: booking.customerId,
             templateName: 'booking_cancellation',
@@ -97,6 +128,16 @@ export class BookingService {
             type: 'success'
           });
         } else if (status === 'CANCELLED') {
+          EmailService.sendBookingCancellation(booking.email, {
+            customerName: booking.name,
+            bookingId: booking.id,
+            eventDate: booking.date,
+            eventType: booking.eventType,
+            refundInfo: booking.paid > 0 
+              ? `Processed cancellation for booking with ₹${booking.paid.toLocaleString()} paid. Refund is subject to cancellation terms.` 
+              : 'No deposit was paid. No refund is due.'
+          }).catch(err => console.error('Failed to send booking cancellation email:', err));
+
           await NotificationService.sendNotification({
             customerId: booking.customerId,
             templateName: 'booking_cancellation',
@@ -119,6 +160,18 @@ export class BookingService {
 
   async cancelBooking(id: string, changedBy = 'COORDINATOR') {
     const booking = await bookingRepository.update(id, { status: 'CANCELLED' }, changedBy);
+
+    // Asynchronously send booking cancellation email
+    EmailService.sendBookingCancellation(booking.email, {
+      customerName: booking.name,
+      bookingId: booking.id,
+      eventDate: booking.date,
+      eventType: booking.eventType,
+      refundInfo: booking.paid > 0 
+        ? `Processed cancellation for booking with ₹${booking.paid.toLocaleString()} paid. Refund is subject to cancellation terms.` 
+        : 'No deposit was paid. No refund is due.'
+    }).catch(err => console.error('Failed to send booking cancellation email:', err));
+
     if (booking.customerId) {
       try {
         await NotificationService.sendNotification({
@@ -192,8 +245,9 @@ export class BookingService {
 
     const newPaid = booking.paid + amount;
     const newPending = Math.max(0, booking.cost - newPaid);
+    const transactionId = `pay_reserve_${Math.floor(100000 + Math.random() * 900000)}`;
 
-    return prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
       const now = new Date();
       const newExpiresAt = new Date(now.getTime() + 48 * 60 * 60 * 1000); // 48-hour holds on paid slots
 
@@ -217,7 +271,7 @@ export class BookingService {
           paymentType: 'ADVANCE',
           paymentStatus: 'PAID',
           paymentMethod: 'Razorpay Sandbox',
-          transactionId: `pay_reserve_${Math.floor(100000 + Math.random() * 900000)}`,
+          transactionId,
           paidAt: new Date(),
           method: 'Razorpay Sandbox',
           status: 'SUCCESS',
@@ -257,6 +311,42 @@ export class BookingService {
 
       return updated;
     });
+
+    // Send dynamic date reserved hold notice, owner notification, and payment receipt
+    const expiresAtStr = result.expiresAt 
+      ? new Date(result.expiresAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' })
+      : new Date(Date.now() + 48 * 60 * 60 * 1000).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' });
+
+    EmailService.sendDateReserved(result.email, {
+      customerName: result.name,
+      bookingId: result.id,
+      eventDate: result.date,
+      amountPaid: amount,
+      expiresAt: expiresAtStr,
+      contactPhone: result.coordinatorPhone,
+      contactEmail: 'shalini.meshram@gmail.com'
+    }).catch(err => console.error('Failed to send date reserved email:', err));
+
+    EmailService.sendOwnerBookingNotification({
+      customerName: result.name,
+      customerEmail: result.email,
+      customerPhone: result.phone,
+      eventDate: result.date,
+      eventType: result.eventType,
+      bookingId: result.id,
+      amountPaid: amount
+    }).catch(err => console.error('Failed to send owner booking confirmation email:', err));
+
+    EmailService.sendPaymentReceipt(result.email, {
+      customerName: result.name,
+      bookingId: result.id,
+      transactionId,
+      amount,
+      remainingBalance: result.pending,
+      paymentDate: new Date().toLocaleDateString()
+    }).catch(err => console.error('Failed to send payment receipt email:', err));
+
+    return result;
   }
 
   async processExpiredReservations() {

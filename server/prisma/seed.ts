@@ -34,7 +34,7 @@ const customerBookings = [
     pending: 300000,
     notes: 'Requires luxury floral stage decoration, grand entrance layout, and customized sweet stalls.',
     location: 'Grand Main Lawn A & B',
-    coordinatorName: 'Aravind Sharma',
+    coordinatorName: 'Shalini Meshram',
     coordinatorPhone: '+91 98877 66554',
     status: 'CONFIRMED',
     createdAt: new Date('2025-11-15T10:00:00.000Z'),
@@ -219,7 +219,7 @@ async function main() {
   console.log('Seeding customer notes and documents...');
   await prisma.customerNote.createMany({
     data: [
-      { customerId: customer.id, note: 'Prefers mild spices in wedding menu, and extra yellow marigolds.', authorName: 'Aravind Sharma' },
+      { customerId: customer.id, note: 'Prefers mild spices in wedding menu, and extra yellow marigolds.', authorName: 'Shalini Meshram' },
       { customerId: customer.id, note: 'Discussed stage setup sizes. Standard 40ft stage required.', authorName: 'Meera Nair' },
     ]
   });
@@ -316,14 +316,21 @@ async function main() {
   });
 
   console.log('Seeding admin users...');
-  const hashedDefaultPassword = bcrypt.hashSync('owner123', 10);
+  const ownerEmail = process.env.OWNER_EMAIL;
+  const ownerPassword = process.env.OWNER_PASSWORD;
+
+  if (!ownerEmail || !ownerPassword) {
+    throw new Error('OWNER_EMAIL and OWNER_PASSWORD environment variables must be defined in order to seed the owner account.');
+  }
+
+  const hashedOwnerPassword = bcrypt.hashSync(ownerPassword, 10);
   const hashedManagerPassword = bcrypt.hashSync('manager123', 10);
 
   const userOwner = await prisma.user.create({
     data: {
-      name: 'Aravind Sharma (Owner)',
-      email: 'owner@goldencelebration.com',
-      password: hashedDefaultPassword,
+      name: 'Shalini Meshram',
+      email: ownerEmail,
+      password: hashedOwnerPassword,
       roleId: roleOwner.id
     }
   });
@@ -337,9 +344,30 @@ async function main() {
     }
   });
 
+  const roleStaff = await prisma.role.create({
+    data: {
+      name: 'STAFF',
+      permissions: {
+        connect: [
+          permissions['read:bookings']
+        ].map(p => ({ id: p.id }))
+      }
+    }
+  });
+
+  const hashedStaffPassword = bcrypt.hashSync('staff123', 10);
+  const userStaff = await prisma.user.create({
+    data: {
+      name: 'Rahul Verma (Staff)',
+      email: 'staff@goldencelebration.com',
+      password: hashedStaffPassword,
+      roleId: roleStaff.id
+    }
+  });
+
   console.log('Seeding blocked and availability dates...');
   await prisma.blockedDate.create({
-    data: { date: '2026-11-15', reason: 'Blocked for Annual Lawn Grass Core Aeration & Re-seeding Maintenance.', blockedBy: 'Aravind Sharma (Owner)' }
+    data: { date: '2026-11-15', reason: 'Blocked for Annual Lawn Grass Core Aeration & Re-seeding Maintenance.', blockedBy: 'Shalini Meshram' }
   });
 
   const datesList = [
@@ -397,7 +425,7 @@ async function main() {
   await prisma.bookingTimelineEvent.createMany({
     data: [
       { bookingId: 'GC-2026-0912', title: 'Inquiry Submitted', description: 'Wedding Reception booking inquiry submitted.', type: 'STATUS_CHANGE', date: '2025-11-15' },
-      { bookingId: 'GC-2026-0912', title: 'Site Visit Completed', description: 'Rajesh Kumar completed the venue walkthrough with Aravind Sharma.', type: 'MILESTONE_UPDATE', date: '2025-11-20' },
+      { bookingId: 'GC-2026-0912', title: 'Site Visit Completed', description: 'Rajesh Kumar completed the venue walkthrough with Shalini Meshram.', type: 'MILESTONE_UPDATE', date: '2025-11-20' },
       { bookingId: 'GC-2026-0912', title: 'Advance Deposit Paid', description: 'Advance payment of ₹1,50,000 received via HDFC Bank Transfer (Receipt RCP-98124).', type: 'PAYMENT_RECEIVED', date: '2025-12-01' },
       { bookingId: 'GC-2026-0912', title: 'Booking Confirmed', description: 'Booking status transitioned to Confirmed.', type: 'STATUS_CHANGE', date: '2025-12-01' },
       { bookingId: 'GC-2026-0912', title: 'Second Payment Received', description: 'Payment of ₹1,00,000 received via Google Pay (Receipt RCP-98402).', type: 'PAYMENT_RECEIVED', date: '2026-03-15' }

@@ -575,7 +575,7 @@ function PaymentsContent() {
                     <span className="text-[9px] font-bold uppercase tracking-wider text-gold-600 dark:text-gold-400 block mb-1">Billed To:</span>
                     <p className="font-bold text-foreground">Customer: Rajesh Kumar</p>
                     <p>rajesh.kumar@gmail.com</p>
-                    <p>+91 98765 43210</p>
+                    <p>+91 9823464705</p>
                   </div>
                   <div className="space-y-1">
                     <span className="text-[9px] font-bold uppercase tracking-wider text-gold-600 dark:text-gold-400 block mb-1">Venue Booking Event:</span>

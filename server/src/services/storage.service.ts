@@ -8,10 +8,28 @@ export interface StorageProvider {
   getPublicUrl(filename: string, bucket: string): Promise<string>;
 }
 
+function validateImage(fileBuffer: Buffer, mimeType: string) {
+  const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+  if (!allowedMimeTypes.includes(mimeType.toLowerCase())) {
+    const error = new Error(`Invalid image type: ${mimeType}. Allowed types: JPEG, PNG, GIF, WEBP, SVG`);
+    (error as any).status = 400;
+    throw error;
+  }
+
+  const maxSizeBytes = 5 * 1024 * 1024; // 5MB
+  if (fileBuffer.length > maxSizeBytes) {
+    const error = new Error(`File size ${(fileBuffer.length / (1024 * 1024)).toFixed(2)}MB exceeds the 5MB limit.`);
+    (error as any).status = 400;
+    throw error;
+  }
+}
+
 export class LocalStorageProvider implements StorageProvider {
   private uploadsDir = path.join(__dirname, '../../uploads');
 
   async uploadImage(fileBuffer: Buffer, filename: string, bucket: string, mimeType: string): Promise<string> {
+    validateImage(fileBuffer, mimeType);
+
     const bucketDir = path.join(this.uploadsDir, bucket);
     // Ensure the folder exists
     await fs.promises.mkdir(bucketDir, { recursive: true });
@@ -43,24 +61,32 @@ export class LocalStorageProvider implements StorageProvider {
 
 export class SupabaseStorageProvider implements StorageProvider {
   private supabase: any;
-  private supabaseBucket: string;
 
   constructor() {
     const supabaseUrl = process.env.SUPABASE_URL || '';
-    const supabaseKey = process.env.SUPABASE_KEY || '';
-    this.supabaseBucket = process.env.SUPABASE_BUCKET || 'golden-lawn-cms';
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY || '';
 
     if (!supabaseUrl || !supabaseKey) {
-      console.warn('Warning: SUPABASE_URL or SUPABASE_KEY is missing in env config. Supabase uploads will fail.');
+      console.warn('Warning: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY/SUPABASE_KEY is missing in env config. Supabase uploads will fail.');
     }
-    this.supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Clean URL if it has the rest/v1/ suffix
+    let cleanUrl = supabaseUrl;
+    if (cleanUrl.endsWith('/rest/v1/')) {
+      cleanUrl = cleanUrl.slice(0, -9);
+    } else if (cleanUrl.endsWith('/rest/v1')) {
+      cleanUrl = cleanUrl.slice(0, -8);
+    }
+
+    this.supabase = createClient(cleanUrl, supabaseKey);
   }
 
   async uploadImage(fileBuffer: Buffer, filename: string, bucket: string, mimeType: string): Promise<string> {
-    const storagePath = `${bucket}/${filename}`;
+    validateImage(fileBuffer, mimeType);
+
     const { data, error } = await this.supabase.storage
-      .from(this.supabaseBucket)
-      .upload(storagePath, fileBuffer, {
+      .from(bucket)
+      .upload(filename, fileBuffer, {
         contentType: mimeType,
         upsert: true,
       });
@@ -76,24 +102,23 @@ export class SupabaseStorageProvider implements StorageProvider {
     try {
       const segments = fileUrl.split('/');
       const filename = segments[segments.length - 1];
-      const storagePath = `${bucket}/${filename}`;
+      
       const { error } = await this.supabase.storage
-        .from(this.supabaseBucket)
-        .remove([storagePath]);
+        .from(bucket)
+        .remove([filename]);
 
       if (error) {
-        console.error(`Failed to delete image from Supabase: ${fileUrl}`, error);
+        console.error(`Failed to delete image from Supabase bucket ${bucket}: ${fileUrl}`, error);
       }
     } catch (error) {
-      console.error(`Failed to delete image from Supabase: ${fileUrl}`, error);
+      console.error(`Failed to delete image from Supabase bucket ${bucket}: ${fileUrl}`, error);
     }
   }
 
   async getPublicUrl(filename: string, bucket: string): Promise<string> {
-    const storagePath = `${bucket}/${filename}`;
     const { data } = this.supabase.storage
-      .from(this.supabaseBucket)
-      .getPublicUrl(storagePath);
+      .from(bucket)
+      .getPublicUrl(filename);
 
     return data.publicUrl;
   }
@@ -103,3 +128,4 @@ const providerType = process.env.STORAGE_PROVIDER || 'local';
 export const storageService = providerType === 'supabase'
   ? new SupabaseStorageProvider()
   : new LocalStorageProvider();
+

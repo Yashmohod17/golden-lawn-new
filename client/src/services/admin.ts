@@ -17,7 +17,8 @@ export function getAdminHeaders() {
 async function handleResponse(response: Response) {
   if (!response.ok) {
     if (response.status === 401) {
-      if (typeof window !== 'undefined') {
+      const isLoginEndpoint = response.url.includes('/auth/login') || response.url.includes('/login');
+      if (!isLoginEndpoint && typeof window !== 'undefined') {
         localStorage.removeItem('admin_access_token');
         localStorage.removeItem('admin_user');
         window.location.href = '/admin/login';
@@ -143,13 +144,21 @@ export interface CRMFollowUp {
 
 export const adminService = {
   // 1. Authentication
-  async login(email: string, password: string): Promise<{ accessToken: string; user: AdminUser }> {
+  async login(email: string, password: string): Promise<{ accessToken?: string; user?: AdminUser; error?: string }> {
     const res = await fetch(`${API_URL}/api/admin/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     });
-    return handleResponse(res);
+    if (!res.ok) {
+      let errorMsg = 'Invalid email or password.';
+      try {
+        const data = await res.json();
+        errorMsg = data.error || data.message || errorMsg;
+      } catch (_) {}
+      return { error: errorMsg };
+    }
+    return res.json();
   },
 
   // 2. Dashboard Summary

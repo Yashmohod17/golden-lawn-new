@@ -7,7 +7,7 @@ import { CostEstimator } from '../../components/CostEstimator';
 import { CalendarChecker } from '../../components/CalendarChecker';
 
 export default function Contact() {
-  const whatsappNumber = '919876543210';
+  const whatsappNumber = '919823464705';
   const whatsappLink = `https://wa.me/${whatsappNumber}?text=Hello!%20I%20would%20like%20to%20inquire%20about%20booking%20availability%20for%20an%20event.`;
 
   return (
@@ -56,7 +56,7 @@ export default function Contact() {
                   <div>
                     <span className="block font-bold text-foreground">Phone Number</span>
                     <span className="text-foreground/70 dark:text-foreground/75 mt-1 block">
-                      +91 98765 43210
+                      +91 9823464705
                     </span>
                   </div>
                 </li>
